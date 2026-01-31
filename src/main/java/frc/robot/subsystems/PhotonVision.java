@@ -1,9 +1,14 @@
+package frc.robot.subsystems;
+
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+import frc.robot.Constants;
 
 public class PhotonVision {
 	List<PhotonCamera> robotCameras;
@@ -13,13 +18,11 @@ public class PhotonVision {
     List<PhotonPoseEstimator> poseEstimators;
    
     // Make a list of PhotonPoseEstimators
-    for i in robotCameras {
+    for (PhotonCamera i : robotCameras) {
     	camera = new PhotonCamera(Constants.vision.localizationCameraName[i])
     	cameraEst.append(new PhotonPoseEstimator(Constants.vision.kTagLayout,
     		                        PoseStratagy MULTI_TAG_PNP_ON_COPROCESSOR,
     		                        Constants.vision.localizationCameraToRobot[i]));
-    	// TODO: tell the programming team to make that var
-    	// actually, tell them to make both
    
     	cameraEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
     	// TODO: learn what 'PoseStratagy' is
@@ -30,7 +33,7 @@ public class PhotonVision {
 		// check to see which camera matches the desired name, and when it's found,
 		// return the pose
 		visionEst = Optional.empty();
-		for i in robotCameras {
+		for (PhotonCamera i : robotCameras) {
 			if (i.getName() == cameraName) {
 			visionEst = i.update(i.getLatestResult());
 			break;
