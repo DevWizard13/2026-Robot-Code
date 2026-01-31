@@ -20,9 +20,9 @@ public class PhotonVision {
 
     // Make a list of PhotonPoseEstimators
     for (int i = 0; i < robotCameras; i++) {
-    	PhotonCamera camera = new PhotonCamera(Constants.vision.localizationCameraName[i])
+    	PhotonCamera camera = new PhotonCamera(Constants.vision.localizationCameraName[i]);
     	cameraEst.append(new PhotonPoseEstimator(Constants.vision.kTagLayout,
-    		                        PoseStratagy MULTI_TAG_PNP_ON_COPROCESSOR,
+    		                        PoseStratagy.MULTI_TAG_PNP_ON_COPROCESSOR,
     		                        Constants.vision.localizationCameraToRobot[i]));
 
     	cameraEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
@@ -36,10 +36,10 @@ public class PhotonVision {
 		visionEst = Optional.empty();
 		for (PhotonCamera i : robotCameras) {
 			if (i.getName() == cameraName) {
-			visionEst = i.update(i.getLatestResult());
-			break;
-			// there better not be multiple cameras of the same name
-			// if so, I'm gonna have a talk with someone! /hj
+		     visionEst = i.update(i.getLatestResult());
+		     break;
+		     // there better not be multiple cameras of the same name
+		     // if so, I'm gonna have a talk with someone! /hj
 			}
 		}
 

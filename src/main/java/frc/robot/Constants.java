@@ -31,6 +31,19 @@ public final class Constants {
         public static final int RIGHT_FOLLOWER = 2;
     }
 
+    public static final class vision {
+      public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.LoadAprilTagLayoutField();
+
+      public static final String[4] localizationCameraName = ["dc1", "dc2", "dc3", "sc"];
+      // Update the number of cameras later, dc stands for "drive camera" and sc
+      // for "shooter camera"
+      public static final Transform3d[4] localizationCameraToRobot = [
+        new Transform3d(), new Transform3d(), new Transform3d(), new Transform3d()
+        // I'm gonna add REAL code here later, but I don't feel like writing
+        // that rn
+      ];
+    }
+
         // Joysticks and Buttons
           public static final class Controls {
             //Driver Joystick and Buttons
