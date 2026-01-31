@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -15,15 +16,15 @@ public class PhotonVision {
 
 	public PhotonVision (List<PhotonCamera> cameras) {
     List <PhotonCamera> robotCameras = cameras;
-    List<PhotonPoseEstimator> poseEstimators;
-   
+    List<PhotonPoseEstimator> cameraEst;
+
     // Make a list of PhotonPoseEstimators
-    for (PhotonCamera i : robotCameras) {
-    	camera = new PhotonCamera(Constants.vision.localizationCameraName[i])
+    for (int i = 0; i < robotCameras; i++) {
+    	PhotonCamera camera = new PhotonCamera(Constants.vision.localizationCameraName[i])
     	cameraEst.append(new PhotonPoseEstimator(Constants.vision.kTagLayout,
     		                        PoseStratagy MULTI_TAG_PNP_ON_COPROCESSOR,
     		                        Constants.vision.localizationCameraToRobot[i]));
-   
+
     	cameraEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
     	// TODO: learn what 'PoseStratagy' is
     }
