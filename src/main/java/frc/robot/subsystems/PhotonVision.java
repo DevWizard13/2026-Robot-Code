@@ -20,7 +20,6 @@ public class PhotonVision {
 
     // Make a list of PhotonPoseEstimators
     for (int i = 0; i < robotCameras.size(); i++) {
-    	PhotonCamera camera = new PhotonCamera(Constants.vision.localizationCameraName[i]);
     	cameraEst.add(new PhotonPoseEstimator(Constants.vision.kTagLayout,
     		                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
     		                        Constants.vision.localizationCameraToRobot[i]));
