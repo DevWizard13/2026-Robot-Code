@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
-import java.util.List;
+import java.util.*;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -13,43 +13,42 @@ import frc.robot.Constants;
 
 public class PhotonVision {
 	List<PhotonCamera> robotCameras;
+  List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
 
 	public PhotonVision (List<PhotonCamera> cameras) {
-    List <PhotonCamera> robotCameras = cameras;
-    List<PhotonPoseEstimator> cameraEst;
+    List<PhotonCamera> robotCameras = cameras;
 
     // Make a list of PhotonPoseEstimators
-    for (int i = 0; i < robotCameras; i++) {
+    for (int i = 0; i < robotCameras.size(); i++) {
     	PhotonCamera camera = new PhotonCamera(Constants.vision.localizationCameraName[i]);
-    	cameraEst.append(new PhotonPoseEstimator(Constants.vision.kTagLayout,
-    		                        PoseStratagy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    	cameraEst.add(new PhotonPoseEstimator(Constants.vision.kTagLayout,
+    		                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
     		                        Constants.vision.localizationCameraToRobot[i]));
 
-    	cameraEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY)
-    	// TODO: learn what 'PoseStratagy' is
+    	cameraEst.get(i).setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 	}
 
-	public Optional<EstimatedRobotPose> getPose(String cameraName, var results) {
+	public Optional<EstimatedRobotPose> getPose(String cameraName) {
 		// check to see which camera matches the desired name, and when it's found,
 		// return the pose
-		visionEst = Optional.empty();
+		Optional<EstimatedRobotPose> visionEst = Optional.empty();
 		for (PhotonCamera i : robotCameras) {
 			if (i.getName() == cameraName) {
-		     visionEst = i.update(i.getLatestResult());
-		     break;
-		     // there better not be multiple cameras of the same name
-		     // if so, I'm gonna have a talk with someone! /hj
+        int index = robotCameras.indexOf(i);
+		    visionEst = cameraEst.get(index).update(i.getLatestResult());
+		    break;
+		    // there better not be multiple cameras of the same name
+		    // if so, I'm gonna have a talk with someone! /hj
 			}
 		}
 
-		if (visionEst != Optional.empty()) {
+		if (visionEst.isPresent()) {
 			return visionEst;
 		}
 		else {
-				pass;
-				// TODO: write code to indicate something has gone seriously wrong
-				// we'll probably notice anyway but whatever
-			}
+      System.out.println("ERROR: Could not identify any cameras");
+			return Optional.empty();
+		}
 	}
 }
