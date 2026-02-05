@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
+// import com.ctre.phoenix6.signals.InvertedValue;
+// import com.ctre.phoenix6.signals.NeutralModeValue;
+// import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -26,8 +26,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.util.COTSTalonFXSwerveConstants;
-import frc.lib.util.SwerveModuleConstants;
+// import frc.lib.util.COTSTalonFXSwerveConstants;
+//import frc.lib.util.SwerveModuleConstants;
 // Credit to Kye for all this, I just ctrl c'd and v'd it
 // I don't have the patience to manually resolve dependancies lol
 
