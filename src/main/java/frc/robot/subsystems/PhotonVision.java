@@ -11,9 +11,11 @@ import frc.robot.Constants;
 public class PhotonVision {
 	List<PhotonCamera> robotCameras;
   List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
+  Pose2d targetPose = new Pose2d();
 
-	public PhotonVision (List<PhotonCamera> cameras) {
+	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     List<PhotonCamera> robotCameras = cameras;
+    targetPose = target;
 
     // Make a list of PhotonPoseEstimators
     for (int i = 0; i < robotCameras.size(); i++) {
@@ -48,7 +50,7 @@ public class PhotonVision {
 		}
 	}
 
-  public float getDistanceToTag(String cameraName, Pose2d targetPose) {
+  public float getDistanceToTag(String cameraName) {
     Optional<EstimatedRobotPose> robotPose = getPose(cameraName);
     if (robotPose.isEmpty()) {
       System.out.println("ERROR: cannot determine pose");
