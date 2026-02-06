@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
 import java.util.*;
 
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-
-import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.*;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import edu.wpi.first.math.geometry.*;
 import frc.robot.Constants;
 
 public class PhotonVision {
@@ -50,4 +47,16 @@ public class PhotonVision {
 			return Optional.empty();
 		}
 	}
+
+  public float getDistanceToTag(String cameraName, Pose2d targetPose) {
+    Optional<EstimatedRobotPose> robotPose = getPose(cameraName);
+    if (robotPose.isEmpty()) {
+      System.out.println("ERROR: cannot determine pose");
+      return 0f;
+    }
+    else {
+      Pose2d myPose = robotPose.get().estimatedPose.toPose2d();
+      return (float)PhotonUtils.getDistanceToPose(myPose, targetPose);
+    }
+  }
 }
