@@ -4,37 +4,31 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import com.revrobotics.RelativeEncoder;
-//For CAN
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-// For PWM
-//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private SparkMax ClimbMotor = new SparkMax(Constants.SubsystemPorts.ClimberPort, MotorType.kBrushless);
-  private final RelativeEncoder ClimbEncoder = ClimbMotor.getEncoder();
+    private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
+    // Duty cycle control request (percent output)
+    private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
+    double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+  
+
+
+
 
   public ClimberSubsystem() {
-    SparkMaxConfig config = new SparkMaxConfig();
 
-    config
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(20); // 20 Amp current limit to protect motor and battery
-    ClimbMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-
-    ClimbEncoder.setPosition(0);
-
+    //Make the motor brake when no power is applied
+       ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
+    ClimbMotor.setPosition(0.0);
+ 
   }
 
   /**
@@ -70,27 +64,36 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command UpClimb() {
     return this.run(() -> {
 
-      if (ClimbEncoder.getPosition() < 50) { // Prevents the climber from going too high
-        ClimbMotor.set(Constants.MotorSpeeds.ClimberSpeed);
+
+ 
+
+      positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+      System.out.println("Climber Position: " + positionRotations);
+
+      if (positionRotations < 50) { // Prevents the climber from going too high
+        ClimbMotor.setControl(dutyCycleRequest.withOutput(0.10));
       } else {
-        ClimbMotor.set(0);
+        ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
       }
     });
   }
 
   public Command StopClimb() {
     return this.run(() -> {
-      ClimbMotor.set(0);
+      System.out.println("Climber Position: " + positionRotations);
+     ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
     });
   }
 
   public Command DownClimb() {
     return this.run(() -> {
+    positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+System.out.println("Climber Position: " + positionRotations);
 
-      if (ClimbEncoder.getPosition() > 0) { // Prevents the climber from going too low
-        ClimbMotor.set(-Constants.MotorSpeeds.ClimberSpeed);
+      if (positionRotations > 0) { // Prevents the climber from going too low
+        ClimbMotor.setControl(dutyCycleRequest.withOutput(-0.10));
       } else {
-        ClimbMotor.set(0);
+        ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
       }
     });
   }
