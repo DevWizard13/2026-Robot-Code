@@ -55,6 +55,8 @@ public class RobotContainer {
 
     // Configure the trigger bindings
 
+
+
     configureBindings();
     // drive command
     m_driveSubsystem.setDefaultCommand(
@@ -123,28 +125,30 @@ public class RobotContainer {
       // .onTrue(m_ShooterSubsystem.StartShoot())
       // .onFalse(m_ShooterSubsystem.StopShoot());
      
-      // m_driverController.rightBumper()
-      // .onTrue(m_ShooterSubsystem.ReverseShoot())
-      // .onFalse(m_ShooterSubsystem.StopShoot());
+      m_driverController.rightBumper()
+      .onTrue(m_ShooterSubsystem.ReverseShoot())
+      .onFalse(m_ShooterSubsystem.StopShoot());
 
   
     
     // Opertor Controls
     // Climber control
     
-// m_operatorController.povUp()
-//         .onTrue(new RunCommand(() -> m_ClimberSubsystem.UpClimb(), m_ClimberSubsystem));
-//      //   .onFalse(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem)); 
-// m_operatorController.povDown()
-//         .onTrue(new RunCommand(() -> m_ClimberSubsystem.DownClimb(), m_ClimberSubsystem));
-//         //.onFalse(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem));
-//         //Zero Climb Encoder
-// m_operatorController.y().onTrue(new RunCommand(() -> m_ClimberSubsystem.ZeroClimb(), m_ClimberSubsystem));
+
 // //Stop Climb
 // m_operatorController.povLeft().onTrue(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem));
 
 
-
+          m_driverController.povUp()
+        .onTrue(m_ClimberSubsystem.UpClimb())
+        .onFalse(m_ClimberSubsystem.StopClimb()); 
+      m_driverController.povDown()
+        .onTrue(m_ClimberSubsystem.DownClimb())
+        .onFalse(m_ClimberSubsystem.StopClimb());
+        //Zero Climb Encoder
+      m_driverController.y()
+      .onChange(m_ClimberSubsystem.ZeroClimb());
+      
   
 
     // Intake control

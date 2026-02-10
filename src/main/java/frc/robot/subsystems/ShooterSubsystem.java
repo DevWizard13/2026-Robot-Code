@@ -122,18 +122,19 @@ public class ShooterSubsystem extends SubsystemBase {
 //     });
 //   }
 
-  // public Command StopShoot() {
-  //   return this.run(() -> {
-  //     Shooter1Motor.set(0.0);
-  //     Shooter2Motor.set(0.0);
-  //   });
-  // }
+  public Command StopShoot() {
+    return this.run(() -> {
+      // Shooter1Motor.set(0.0);
+      // Shooter2Motor.set(0.0);
+    });
+  }
 
-  // public Command ReverseShoot() {
-  //   return this.run(() -> {
-  //     Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
-  //     Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
-  //   });
-  // }
+  public Command ReverseShoot() {
+    return this.run(() -> {
+      // Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+      // Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+      System.out.println("Reverse Shoot Command Executed");
+    });
+   }
 
 }

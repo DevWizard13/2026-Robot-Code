@@ -4,12 +4,14 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -17,7 +19,8 @@ public class ClimberSubsystem extends SubsystemBase {
   // Duty cycle control request (percent output)
  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-   
+       private final DutyCycleOut percentOutput = new DutyCycleOut(0);
+    private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
   
   boolean UpOn = true;
      boolean DownOn = true;
@@ -27,7 +30,7 @@ public class ClimberSubsystem extends SubsystemBase {
     // Make the motor brake when no power is applied
   //  ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
     ClimbMotor.setPosition(0.0);
-
+    ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
   }
 
   /**
@@ -111,16 +114,34 @@ public class ClimberSubsystem extends SubsystemBase {
   //   });
   // }
 
+  public Command StopClimb() {
+    return this.run(() -> {
+      ClimbMotor.setControl(percentOutput.withOutput(0.0));
+    });
+  }
 
-  // public Command ZeroClimb() {
-  //   return this.run(() -> {
-  //     ClimbMotor.setPosition(0.0);
-      
-  //   });
-  // }
-
-
-
-
+  public Command ZeroClimb() {
+    return this.run(() -> {
+      ClimbMotor.setPosition(0.0);
+      System.out.println("Climber Zeroed");
+    });
+  }
+  public Command UpClimb() {
+    return this.run(() -> {
+         positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+      if (positionRotations < 52) { // Prevents the climber from going too high 
+      ClimbMotor.setControl(percentOutput.withOutput(0.2));
+      System.out.println("Climber Position: " + positionRotations);
+    }});
+  }
+  public Command DownClimb() {
+    return this.run(() -> {
+      positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+      if (positionRotations > 4) { // Prevents the climber from going too low
+      ClimbMotor.setControl(percentOutput.withOutput(-0.2));
+      System.out.println("Climber Position: " + positionRotations);
+    }  });
+  }
+   
 
 }

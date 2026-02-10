@@ -20,7 +20,7 @@ public class AgitatorSubsystem extends SubsystemBase {
   private SparkMax AgitatorMotor;
 
   public AgitatorSubsystem() {
-    AgitatorMotor = new SparkMax(Constants.SubsystemPorts.AgitatorPort, MotorType.kBrushless);
+    //AgitatorMotor = new SparkMax(Constants.SubsystemPorts.AgitatorPort, MotorType.kBrushless);
 
   }
 
@@ -56,19 +56,19 @@ public class AgitatorSubsystem extends SubsystemBase {
 
   public Command StartAgitator() {
     return this.run(() -> {
-      AgitatorMotor.set(Constants.MotorSpeeds.MaxAgitatorSpeed);
+      //AgitatorMotor.set(Constants.MotorSpeeds.MaxAgitatorSpeed);
     });
   }
 
   public Command ReverseAgitator() {
     return this.run(() -> {
-      AgitatorMotor.set(-Constants.MotorSpeeds.MaxAgitatorSpeed);
+      //AgitatorMotor.set(-Constants.MotorSpeeds.MaxAgitatorSpeed);
     });
   }
 
   public Command StopAgitator() {
     return this.run(() -> {
-      AgitatorMotor.set(0);
+      //AgitatorMotor.set(0);
     });
   }
 

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.lang.annotation.Target;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -67,4 +69,10 @@ public final class Constants {
         }
     }
 
+
+    public static final class ClimberConstants {
+        public static final double ClimbUpSpeed = 0.2;
+        public static final double ClimbDownSpeed = -0.2;
+        public static final double ClimbTarget = 52; // Default target is 52 rotations
+    }
 }
