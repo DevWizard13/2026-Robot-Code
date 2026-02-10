@@ -26,24 +26,24 @@ public final class Constants {
 
     public static final class DrivePorts {
         // Drive Motor Ports
-        public static final int LEFT_MASTER = 1; 
-        public static final int LEFT_FOLLOWER = 2; 
+        public static final int LEFT_MASTER = 4;
+        public static final int LEFT_FOLLOWER = 6;
         public static final int RIGHT_MASTER = 3;
-        public static final int RIGHT_FOLLOWER = 4;
+        public static final int RIGHT_FOLLOWER = 5;
 
     }
 
     public static final class SubsystemPorts {
         // CAN Ports
         // Shooter Ports
-        public static final int Shooter1Port = 5; 
-        public static final int Shooter2Port = 6; 
+        public static final int Shooter1Port = 10;
+        public static final int Shooter2Port = 6;
         // Climber Port
-        public static final int ClimberPort = 7;
+        public static final int ClimberPort = 9;
         // Intake Port
         public static final int IntakePort = 8;
         // Agitator Port
-        public static final int AgitatorPort = 9;
+        public static final int AgitatorPort = 15;
     }
 
     public static final class MotorSpeeds {

@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -14,21 +13,21 @@ import frc.robot.Constants;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-    private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
-    // Duty cycle control request (percent output)
-    private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
-    double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+ private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
+  // Duty cycle control request (percent output)
+ private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
+  double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+   
   
-
-
-
+  boolean UpOn = true;
+     boolean DownOn = true;
 
   public ClimberSubsystem() {
 
-    //Make the motor brake when no power is applied
-       ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
+    // Make the motor brake when no power is applied
+  //  ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
     ClimbMotor.setPosition(0.0);
- 
+
   }
 
   /**
@@ -59,14 +58,13 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-  }
+  // }
 
-  public Command UpClimb() {
-    return this.run(() -> {
+  // public Command UpClimb() {
+  /*   return this.run(() -> {
 
-
- 
-
+       UpOn = true;
+      while(UpOn) {
       positionRotations = ClimbMotor.getPosition().getValueAsDouble();
       System.out.println("Climber Position: " + positionRotations);
 
@@ -74,28 +72,55 @@ public class ClimberSubsystem extends SubsystemBase {
         ClimbMotor.setControl(dutyCycleRequest.withOutput(0.10));
       } else {
         ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
+        UpOn = false;
       }
-    });
+
+    }
+    });*/
   }
 
-  public Command StopClimb() {
-    return this.run(() -> {
-      System.out.println("Climber Position: " + positionRotations);
-     ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
-    });
-  }
+  // public Command StopClimb() {
+  //   // return this.run(() -> {
 
-  public Command DownClimb() {
-    return this.run(() -> {
-    positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-System.out.println("Climber Position: " + positionRotations);
+  //   //   System.out.println("Climber Position: " + positionRotations);
+  //   //   ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
+  //   //   DownOn = false;
+  //   //   UpOn = false;
+  //   // });
+  
+  // }
 
-      if (positionRotations > 0) { // Prevents the climber from going too low
-        ClimbMotor.setControl(dutyCycleRequest.withOutput(-0.10));
-      } else {
-        ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
-      }
-    });
-  }
+  // public Command DownClimb() {
+  //   return this.run(() -> {
+
+  //     /* 
+  //       DownOn = true;
+
+  //      while(DownOn){
+  //     positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+  //     System.out.println("Climber Position: " + positionRotations);
+
+  //     if (positionRotations > 0) { // Prevents the climber from going too low
+  //       ClimbMotor.setControl(dutyCycleRequest.withOutput(-0.10));
+  //     } else {
+  //       ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
+  //       DownOn = false;
+  //     }}
+
+  //     */
+  //   });
+  // }
+
+
+  // public Command ZeroClimb() {
+  //   return this.run(() -> {
+  //     ClimbMotor.setPosition(0.0);
+      
+  //   });
+  // }
+
+
+
+
 
 }

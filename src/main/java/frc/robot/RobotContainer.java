@@ -62,11 +62,11 @@ public class RobotContainer {
             () -> { 
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
-                double fwd = applyDeadbandAndScale(-m_driverController.getLeftY());
+                double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
                 m_driveSubsystem.arcadeDrive(rot, fwd);
               } else {
-                double left = applyDeadbandAndScale(m_driverController.getLeftY());
-                double right = applyDeadbandAndScale(-m_driverController.getRightY());
+                double left = applyDeadbandAndScale(-m_driverController.getLeftY());
+                double right = applyDeadbandAndScale(m_driverController.getRightY());
                 m_driveSubsystem.tankDrive(left, right);
               }
             },
@@ -119,25 +119,29 @@ public class RobotContainer {
     // Shooter control
 
     
-      m_driverController.rightTrigger()
-      .onTrue(m_ShooterSubsystem.StartShoot())
-      .onFalse(m_ShooterSubsystem.StopShoot());
+      // m_driverController.rightTrigger()
+      // .onTrue(m_ShooterSubsystem.StartShoot())
+      // .onFalse(m_ShooterSubsystem.StopShoot());
      
-      m_driverController.rightBumper()
-      .onTrue(m_ShooterSubsystem.ReverseShoot())
-      .onFalse(m_ShooterSubsystem.StopShoot());
+      // m_driverController.rightBumper()
+      // .onTrue(m_ShooterSubsystem.ReverseShoot())
+      // .onFalse(m_ShooterSubsystem.StopShoot());
 
   
     
     // Opertor Controls
     // Climber control
     
-m_operatorController.povUp()
-        .onTrue(new RunCommand(() -> m_ClimberSubsystem.UpClimb(), m_ClimberSubsystem))
-        .onFalse(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem)); 
-m_operatorController.povDown()
-        .onTrue(new RunCommand(() -> m_ClimberSubsystem.DownClimb(), m_ClimberSubsystem))
-        .onFalse(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem));
+// m_operatorController.povUp()
+//         .onTrue(new RunCommand(() -> m_ClimberSubsystem.UpClimb(), m_ClimberSubsystem));
+//      //   .onFalse(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem)); 
+// m_operatorController.povDown()
+//         .onTrue(new RunCommand(() -> m_ClimberSubsystem.DownClimb(), m_ClimberSubsystem));
+//         //.onFalse(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem));
+//         //Zero Climb Encoder
+// m_operatorController.y().onTrue(new RunCommand(() -> m_ClimberSubsystem.ZeroClimb(), m_ClimberSubsystem));
+// //Stop Climb
+// m_operatorController.povLeft().onTrue(new RunCommand(() -> m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem));
 
 
 
@@ -177,6 +181,6 @@ m_operatorController.leftTrigger()
 
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_ShooterSubsystem);
+    return Autos.exampleAuto(m_AgitatorSubsystem);
   }
 }
