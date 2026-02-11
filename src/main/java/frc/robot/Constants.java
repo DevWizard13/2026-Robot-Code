@@ -58,7 +58,8 @@ public final class Constants {
    }
 
    public static final class vision {
-     public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+     public static final AprilTagFieldLayout kTagLayout =
+                         AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
      public static final String[] localizationCameraName = {"dc1", "dc2", "dc3", "sc"};
      // Update the number of cameras later, dc stands for "drive camera" and sc
