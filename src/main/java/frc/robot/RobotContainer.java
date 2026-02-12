@@ -11,6 +11,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,6 +38,7 @@ public class RobotContainer {
 
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final PhotonVision m_photonVision = new PhotonVision();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -77,6 +79,9 @@ public class RobotContainer {
     m_driverController.leftTrigger()
     .onTrue(new InstantCommand(() -> speed = 1.0))
     .onFalse(new InstantCommand(() -> speed = 0.6));
+
+    // Testing to see if the camera returns anything
+    m_driverController.rightTrigger().onTrue(new InstantCommand -> m_photonVision.getPose("Arducam OV9782 USB Camera"))
   }
 
   private double applyDeadbandAndScale(double value) {
