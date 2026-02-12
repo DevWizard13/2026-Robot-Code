@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.*;
+import edu.wpi.first.math.geometry.*;
+import org.photonvision.PhotonCamera;
 
 
 /**
@@ -38,7 +41,7 @@ public class RobotContainer {
 
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final PhotonVision m_photonVision = new PhotonVision(new PhotonCamera("Arducam OV9782 USB Camera"));
+  private final PhotonVision m_photonVision = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")), new Pose2d());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -81,7 +84,7 @@ public class RobotContainer {
     .onFalse(new InstantCommand(() -> speed = 0.6));
 
     // Testing to see if the camera returns anything
-    m_driverController.rightTrigger().onTrue(new InstantCommand -> m_photonVision.getPose("Arducam OV9782 USB Camera"))
+    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_photonVision.getPose("Arducam OV9782 USB Camera")));
   }
 
   private double applyDeadbandAndScale(double value) {
