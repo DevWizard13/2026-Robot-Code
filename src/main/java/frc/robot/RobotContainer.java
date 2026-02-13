@@ -46,6 +46,8 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
 
+
+
   // Drive mode: false = tank (default), true = arcade
 
   /**
@@ -121,9 +123,9 @@ public class RobotContainer {
     // Shooter control
 
     
-      // m_driverController.rightTrigger()
-      // .onTrue(m_ShooterSubsystem.StartShoot())
-      // .onFalse(m_ShooterSubsystem.StopShoot());
+      m_driverController.rightTrigger()
+      .onTrue(m_ShooterSubsystem.StartShoot())
+      .onFalse(m_ShooterSubsystem.StopShoot());
      
       m_driverController.rightBumper()
       .onTrue(m_ShooterSubsystem.ReverseShoot())

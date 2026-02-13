@@ -13,6 +13,7 @@ import frc.robot.Constants;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
  private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);

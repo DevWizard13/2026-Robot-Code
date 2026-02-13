@@ -28,9 +28,9 @@ import com.revrobotics.spark.SparkClosedLoopController;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  //private SparkMax Shooter1Motor = new SparkMax(Constants.SubsystemPorts.Shooter1Port, MotorType.kBrushless);
-  //private SparkMax Shooter2Motor = new SparkMax(Constants.SubsystemPorts.Shooter2Port, MotorType.kBrushless);
- // private final RelativeEncoder ShooterEncoder = Shooter1Motor.getEncoder();
+  private SparkMax Shooter1Motor = new SparkMax(Constants.SubsystemPorts.Shooter1Port, MotorType.kBrushless);
+  private SparkMax Shooter2Motor = new SparkMax(Constants.SubsystemPorts.Shooter2Port, MotorType.kBrushless);
+  private final RelativeEncoder ShooterEncoder = Shooter1Motor.getEncoder();
 
   //private SparkClosedLoopController pidController;
 
@@ -124,17 +124,26 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command StopShoot() {
     return this.run(() -> {
-      // Shooter1Motor.set(0.0);
-      // Shooter2Motor.set(0.0);
+       Shooter1Motor.set(0.0);
+       Shooter2Motor.set(0.0);
     });
   }
 
   public Command ReverseShoot() {
     return this.run(() -> {
-      // Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
-      // Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+      Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+      Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
       System.out.println("Reverse Shoot Command Executed");
     });
    }
 
+
+
+     public Command StartShoot() {
+    return this.run(() -> {
+      Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedOut);
+      Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedOut);
+      System.out.println("Forward Shoot Command Executed");
+    });
+   }
 }
