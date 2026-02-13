@@ -9,6 +9,10 @@ import frc.robot.Constants.Controls.Operator;
 import frc.robot.Constants.SpeedChange;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.PhotonVision;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -18,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.*;
+import edu.wpi.first.math.geometry.*;
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -41,6 +49,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final PhotonVision m_photonVision = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")), new Pose2d());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
@@ -83,6 +92,11 @@ public class RobotContainer {
 
     // Speed boost
     m_driverController.leftTrigger()
+    .onTrue(new InstantCommand(() -> speed = 1.0))
+    .onFalse(new InstantCommand(() -> speed = 0.6));
+
+    // Testing to see if the camera returns anything
+    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_photonVision.getPose("Arducam OV9782 USB Camera")));
         .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
   }
