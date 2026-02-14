@@ -12,24 +12,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
- private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
+  private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
   // Duty cycle control request (percent output)
- private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
+  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-       private final DutyCycleOut percentOutput = new DutyCycleOut(0);
-    private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
-  
-  boolean UpOn = true;
-     boolean DownOn = true;
+  private final DutyCycleOut percentOutput = new DutyCycleOut(0);
+  private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
+
+  boolean STOP = false;
 
   public ClimberSubsystem() {
 
     // Make the motor brake when no power is applied
-  //  ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
+    // ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
     ClimbMotor.setPosition(0.0);
     ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
   }
@@ -62,62 +61,14 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-  // }
-
-  // public Command UpClimb() {
-  /*   return this.run(() -> {
-
-       UpOn = true;
-      while(UpOn) {
-      positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-      System.out.println("Climber Position: " + positionRotations);
-
-      if (positionRotations < 50) { // Prevents the climber from going too high
-        ClimbMotor.setControl(dutyCycleRequest.withOutput(0.10));
-      } else {
-        ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
-        UpOn = false;
-      }
-
-    }
-    });*/
+    double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
+    SmartDashboard.putNumber("Climber Position (Rotations)", positionRotations);
   }
-
-  // public Command StopClimb() {
-  //   // return this.run(() -> {
-
-  //   //   System.out.println("Climber Position: " + positionRotations);
-  //   //   ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
-  //   //   DownOn = false;
-  //   //   UpOn = false;
-  //   // });
-  
-  // }
-
-  // public Command DownClimb() {
-  //   return this.run(() -> {
-
-  //     /* 
-  //       DownOn = true;
-
-  //      while(DownOn){
-  //     positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-  //     System.out.println("Climber Position: " + positionRotations);
-
-  //     if (positionRotations > 0) { // Prevents the climber from going too low
-  //       ClimbMotor.setControl(dutyCycleRequest.withOutput(-0.10));
-  //     } else {
-  //       ClimbMotor.setControl(dutyCycleRequest.withOutput(0.0));
-  //       DownOn = false;
-  //     }}
-
-  //     */
-  //   });
-  // }
 
   public Command StopClimb() {
     return this.run(() -> {
       ClimbMotor.setControl(percentOutput.withOutput(0.0));
+      STOP = true;
     });
   }
 
@@ -127,22 +78,28 @@ public class ClimberSubsystem extends SubsystemBase {
       System.out.println("Climber Zeroed");
     });
   }
+
   public Command UpClimb() {
     return this.run(() -> {
-         positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-      if (positionRotations < 52) { // Prevents the climber from going too high 
-      ClimbMotor.setControl(percentOutput.withOutput(0.2));
-      System.out.println("Climber Position: " + positionRotations);
-    }});
+      STOP = false;
+      if (positionRotations < 52 && !STOP) {
+        ClimbMotor.setControl(percentOutput.withOutput(0.2));
+      } else {
+        StopClimb();
+      }
+    });
   }
+
   public Command DownClimb() {
     return this.run(() -> {
-      positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-      if (positionRotations > 4) { // Prevents the climber from going too low
-      ClimbMotor.setControl(percentOutput.withOutput(-0.2));
-      System.out.println("Climber Position: " + positionRotations);
-    }  });
-  }
-   
+      STOP = false;
+      if (positionRotations > 4 && !STOP) {
+        ClimbMotor.setControl(percentOutput.withOutput(-0.2));
+      } else {
+        StopClimb();
+      }
 
+    });
+
+  }
 }
