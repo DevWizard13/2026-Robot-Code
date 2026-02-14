@@ -52,8 +52,8 @@ public class PhotonVision {
 		}
 	}
 
-  public float getDistanceToTag(String cameraName) {
-    Optional<EstimatedRobotPose> robotPose = getPose(cameraName);
+  public float getDistanceToTag() {
+    Optional<EstimatedRobotPose> robotPose = getPose(Constants.vision.localizationCameraName[0]);
     if (robotPose.isEmpty()) {
       System.out.println("ERROR: cannot determine pose");
       return 0f;

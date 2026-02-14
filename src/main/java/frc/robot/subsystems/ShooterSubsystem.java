@@ -11,6 +11,10 @@ import frc.robot.Constants.Controls.Driver;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.*;
+import org.photonvision.*;
+import edu.wpi.first.math.geometry.*;
+
 // For CAN
 import com.revrobotics.spark.SparkMax;
 import org.ejml.equation.IntegerSequence.For;
@@ -33,6 +37,10 @@ public class ShooterSubsystem extends SubsystemBase {
   private PWMVictorSPX Shooter2Motor = new PWMVictorSPX(Constants.SubsystemPorts.Shooter2Port);
   private final RelativeEncoder ShooterEncoder = Shooter1Motor.getEncoder();
   private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
+  
+  final double speedModifier = 0.25;
+  PhotonVision camera = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
+  new Pose2d());
 
   /**
    * Example command factory method.
@@ -62,8 +70,10 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double currentSpeedRPM = ShooterEncoder.getVelocity(); // NEO default: RPM
+    double currentSpeedRPM = ShooterEncoder.getVelocity() * speedModifier *
+                            camera.getDistanceToTag(); // NEO default: RPM
     SmartDashboard.putNumber("Shooter RPM", currentSpeedRPM);
+    SmartDashboard.putNumber("Distance to Target", camera.getDistanceToTag());
   }
 
   public Command StartShoot() {
