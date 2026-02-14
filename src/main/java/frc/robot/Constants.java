@@ -97,13 +97,6 @@ public final class Constants {
         }
     }
 
-   // Joysticks and Buttons
-   public static final class DrivePorts {
-       public static final int LEFT_MASTER = 0;
-       public static final int LEFT_FOLLOWER = 1;
-       public static final int RIGHT_MASTER = 3;
-       public static final int RIGHT_FOLLOWER = 2;
-   }
 
    public static final class vision {
      public static final AprilTagFieldLayout kTagLayout =
@@ -116,17 +109,7 @@ public final class Constants {
      // TODO: add real code for each Transform3d
    }
 
-       // Joysticks and Buttons
-       public static final class Controls {
-       //Driver Joystick and Buttons
-       public static final class Driver {
-           public static final int kJoystickID = 0;
-       }
-       //Operator Joystick and Buttons
-       public static final class Operator {
-           public static final int kJoystickID = 2;
-       }
-   }
+
     public static final class ClimberConstants {
         public static final double ClimbUpSpeed = 0.2;
         public static final double ClimbDownSpeed = -0.2;

@@ -22,7 +22,6 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.math.controller.PIDController;
 
-
 import com.revrobotics.spark.SparkClosedLoopController;
 
 // For PWM
@@ -31,13 +30,9 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   private SparkMax Shooter1Motor = new SparkMax(Constants.SubsystemPorts.Shooter1Port, MotorType.kBrushless);
-   private PWMVictorSPX Shooter2Motor = new PWMVictorSPX(Constants.SubsystemPorts.Shooter2Port);
+  private PWMVictorSPX Shooter2Motor = new PWMVictorSPX(Constants.SubsystemPorts.Shooter2Port);
   private final RelativeEncoder ShooterEncoder = Shooter1Motor.getEncoder();
-    private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
-
-
-
-
+  private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
 
   /**
    * Example command factory method.
@@ -67,36 +62,33 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-  double currentSpeedRPM = ShooterEncoder.getVelocity(); // NEO default: RPM
-  SmartDashboard.putNumber("Shooter RPM", currentSpeedRPM);
+    double currentSpeedRPM = ShooterEncoder.getVelocity(); // NEO default: RPM
+    SmartDashboard.putNumber("Shooter RPM", currentSpeedRPM);
   }
 
   public Command StartShoot() {
     return this.run(() -> {
-    
-   double output = pid.calculate(ShooterEncoder.getVelocity(), Constants.SpeedChange.ShooterTargetSpeed);
-     SmartDashboard.putNumber("Shooter Output", output);
-        Shooter1Motor.set(output); // Send computed output to motor
 
-
+      double output = pid.calculate(ShooterEncoder.getVelocity(), Constants.SpeedChange.ShooterTargetSpeed);
+      SmartDashboard.putNumber("Shooter Output", output);
+      Shooter1Motor.set(output); // Send computed output to motor
 
     });
   }
 
   public Command StopShoot() {
     return this.run(() -> {
-       Shooter1Motor.set(0.0);
-       Shooter2Motor.set(0.0);
+      Shooter1Motor.set(0.0);
+      Shooter2Motor.set(0.0);
     });
   }
 
   public Command ReverseShoot() {
     return this.run(() -> {
-       Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
-       Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+      Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+      Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
       System.out.println("Reverse Shoot Command Executed");
     });
-   }
-
+  }
 
 }
