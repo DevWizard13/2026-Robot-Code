@@ -26,7 +26,6 @@ import java.util.*;
 import edu.wpi.first.math.geometry.*;
 import org.photonvision.PhotonCamera;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -56,7 +55,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
 
-  // Drive mode: false = tank (default), true = arcade
+  // Drive mode: false = tank, true = arcade (Default)
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -82,12 +81,14 @@ public class RobotContainer {
             },
             m_driveSubsystem));
 
-    // Toggle drive mode
+    // Toggle drive mode  --  false = tank, true = arcade
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
 
     // Speed boost
     m_driverController.leftTrigger()
+              //Speed Boost ON
         .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
+              //Speed Boost OFF
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
 
     // // Testing to see if the camera returns anything
@@ -125,17 +126,18 @@ public class RobotContainer {
     // new Trigger(m_ShooterSubsystem::exampleCondition)
     // .onTrue(new ExampleCommand(m_ShooterSubsystem));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // cancelling on release.
+
 
     // Driver Controls
     // Shooter control
 
+      //Start Shooter (constant speed)
     m_driverController.rightTrigger()
         .onTrue(m_ShooterSubsystem.StartShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
 
+
+      //Reverse Shooter
     m_driverController.rightBumper()
         .onTrue(m_ShooterSubsystem.ReverseShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
@@ -143,37 +145,42 @@ public class RobotContainer {
     // Opertor Controls
     // Climber control
 
-    // //Stop Climb
-    // m_operatorController.povLeft().onTrue(new RunCommand(() ->
-    // m_ClimberSubsystem.StopClimb(), m_ClimberSubsystem));
-
+        //Climber Up All the way
     m_operatorController.povUp()
         .onTrue(m_ClimberSubsystem.UpClimb());
-        
+
+        //Climber Down All the way
     m_operatorController.povDown()
         .onTrue(m_ClimberSubsystem.DownClimb());
-    
+
     // Zero Climb Encoder
     m_operatorController.y()
         .onChange(m_ClimberSubsystem.ZeroClimb());
 
-      //Stop 
+    // Stop Climb
     m_operatorController.x()
         .onTrue(m_ClimberSubsystem.StopClimb());
-    // Intake control
 
+
+
+    // Intake control
+       //Start Intake
     m_operatorController.rightTrigger()
         .onTrue(m_IntakeSubsystem.StartIntake())
         .onFalse(m_IntakeSubsystem.StopIntake());
 
+        //Stop Intake
     m_operatorController.rightBumper()
         .onTrue(m_IntakeSubsystem.ReverseIntake())
         .onFalse(m_IntakeSubsystem.StopIntake());
 
+       //Agitator Control
+         //Agitaor Forward
     m_operatorController.leftTrigger()
         .onTrue(m_AgitatorSubsystem.StartAgitator())
         .onFalse(m_AgitatorSubsystem.StopAgitator());
 
+          //Agitator reverse
     m_operatorController.leftBumper()
         .onTrue(m_AgitatorSubsystem.ReverseAgitator())
         .onFalse(m_AgitatorSubsystem.StopAgitator());

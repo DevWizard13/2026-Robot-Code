@@ -82,7 +82,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command UpClimb() {
     return this.run(() -> {
       STOP = false;
-      if (positionRotations < 52 && !STOP) {
+      if (positionRotations < 46 && !STOP) {
         ClimbMotor.setControl(percentOutput.withOutput(0.2));
       } else {
         StopClimb();
