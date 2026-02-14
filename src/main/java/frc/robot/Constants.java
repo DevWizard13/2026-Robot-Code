@@ -140,13 +140,4 @@ public final class Constants {
     }
 
 
-    public static final class vision {
-     public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-
-     public static final String[] localizationCameraName = {"dc1", "dc2", "dc3", "sc"};
-     // Update the number of cameras later, dc stands for "drive camera" and sc
-     // for "shooter camera"
-     public static final Transform3d[] localizationCameraToRobot = new Transform3d[4];
-     // TODO: add real code for each Transform3d
-   }
 }

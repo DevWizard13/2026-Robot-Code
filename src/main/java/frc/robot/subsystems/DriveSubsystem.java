@@ -5,9 +5,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-// For PWM
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // For CAN
@@ -26,10 +23,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
-
 public class DriveSubsystem extends SubsystemBase {
 
 
+    
    
     private SparkMax leftMaster = new SparkMax(
         Constants.DrivePorts.LEFT_MASTER, MotorType.kBrushless);
