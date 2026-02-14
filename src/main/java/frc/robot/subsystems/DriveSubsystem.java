@@ -7,9 +7,9 @@ import frc.robot.Constants;
 
 // For PWM
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
- 
-  // For CAN
+// For CAN
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -49,6 +49,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final DifferentialDrive drive = new DifferentialDrive(leftGroup, rightGroup);
 
+
+
     public DriveSubsystem() {
         // Configure defaults here (inversion, safety, etc.) if needed
         drive.setSafetyEnabled(true);
@@ -72,5 +74,11 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Put periodic subsystem code here (telemetry, safety checks)
+
+        // Display motor temperatures on SmartDashboard
+        SmartDashboard.putNumber("Left Front Temp C", leftMaster.getMotorTemperature());
+        SmartDashboard.putNumber("Right Front Temp C", rightMaster.getMotorTemperature());
+        SmartDashboard.putNumber("Left Back Temp C", leftFollower.getMotorTemperature());
+        SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
     }
 }

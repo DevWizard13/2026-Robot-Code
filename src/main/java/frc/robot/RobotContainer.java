@@ -26,7 +26,6 @@ import java.util.*;
 import edu.wpi.first.math.geometry.*;
 import org.photonvision.PhotonCamera;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
