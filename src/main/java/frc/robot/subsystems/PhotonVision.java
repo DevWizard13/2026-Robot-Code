@@ -1,5 +1,5 @@
 package frc.robot.subsystems;
-/*import java.util.Optional;
+import java.util.Optional;
 
 import java.util.*;
 
@@ -9,12 +9,13 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.Constants;
 
+import frc.robot.subsystems.DriveSubsystem;
+
 public class PhotonVision {
-	
-	
 	List<PhotonCamera> robotCameras;
   List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
   Pose2d targetPose = new Pose2d();
+  DriveSubsystem drive = new DriveSubsystem();
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     List<PhotonCamera> robotCameras = cameras;
@@ -64,6 +65,36 @@ public class PhotonVision {
       return (float)PhotonUtils.getDistanceToPose(myPose, targetPose);
     }
   }
-	
+
+  public void aimAtTarget() {
+    PhotonCamera camera = robotCameras.get(0);
+    boolean targetVisible = false;
+    double turn = 0.0;
+    // I'll replace it with the camera at the front
+
+    double targetYaw = 0.0;
+    var results = camera.getAllUnreadResults();
+
+    if (!results.isEmpty()) {
+      // Camera processed a new frame since last
+      // Get the last one in the list.
+
+      var result = results.get(results.size() - 1);
+
+      if (result.hasTargets()) {
+        // At least one AprilTag was seen by the camera
+        for (var target : result.getTargets()) {
+          if (target.getFiducialId() == 7) {
+            // Found Tag 7, record its information
+            targetYaw = target.getYaw();
+
+            targetVisible = true;
+          }
+        }
+      }
+    }
+
+    turn = -1.0 * targetYaw;
+    drive.arcadeDrive(0, turn);
+  }
 }
-*/
