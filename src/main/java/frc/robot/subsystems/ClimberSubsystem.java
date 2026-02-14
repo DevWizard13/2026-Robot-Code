@@ -13,6 +13,7 @@ import frc.robot.Constants;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -27,8 +28,24 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public ClimberSubsystem() {
 
+    CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
+
+    // ----- SUPPLY CURRENT LIMIT -----
+    currentLimits.SupplyCurrentLimit = 10; // Amps
+    currentLimits.SupplyCurrentLimitEnable = true;
+    // currentLimits.SupplyCurrentThreshold = 60; // Amps before limiting kicks in
+    // currentLimits.SupplyTimeThreshold = 0.5; // Seconds over threshold before
+    // limiting
+
+    // ----- STATOR CURRENT LIMIT -----
+    currentLimits.StatorCurrentLimit = 10; // Amps
+    currentLimits.StatorCurrentLimitEnable = true;
+    System.out.println("Climber Current Limits Configured");
+    // Apply the configuration to the motor
+    ClimbMotor.getConfigurator().apply(currentLimits);
+
     // Make the motor brake when no power is applied
-    // ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
+        // ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
     ClimbMotor.setPosition(0.0);
     ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
   }
@@ -73,11 +90,12 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command ZeroClimb() {
-    return this.run(() -> {
+    return this.runOnce(() -> {
       ClimbMotor.setPosition(0.0);
       System.out.println("Climber Zeroed");
     });
   }
+
 
   public Command UpClimb() {
     return this.run(() -> {
@@ -89,6 +107,7 @@ public class ClimberSubsystem extends SubsystemBase {
       }
     });
   }
+
 
   public Command DownClimb() {
     return this.run(() -> {
