@@ -9,8 +9,6 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.math.geometry.*;
 import frc.robot.Constants;
 
-import frc.robot.subsystems.DriveSubsystem;
-
 public class PhotonVision {
 	List<PhotonCamera> robotCameras;
   List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
@@ -94,7 +92,9 @@ public class PhotonVision {
       }
     }
 
-    turn = -1.0 * targetYaw;
-    drive.arcadeDrive(0, turn);
+    if (targetVisible) {
+      turn = -1.0 * targetYaw;
+      drive.arcadeDrive(0, turn);
+    }
   }
 }
