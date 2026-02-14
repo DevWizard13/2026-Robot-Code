@@ -24,6 +24,7 @@ public final class Constants {
         public static final double stickDeadband = 0.07;
         public static final double maxBoostSpeed = 1.00;
         public static final double maxNormalSpeed = 0.70;
+        public static final double ShooterTargetSpeed = 3427.0; // Target speed in RPM for the shooter
     }
 
     public static final class DrivePorts {

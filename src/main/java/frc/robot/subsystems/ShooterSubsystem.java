@@ -20,59 +20,24 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.math.controller.PIDController;
+
 
 import com.revrobotics.spark.SparkClosedLoopController;
 
 // For PWM
-//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   private SparkMax Shooter1Motor = new SparkMax(Constants.SubsystemPorts.Shooter1Port, MotorType.kBrushless);
-  private SparkMax Shooter2Motor = new SparkMax(Constants.SubsystemPorts.Shooter2Port, MotorType.kBrushless);
+   private PWMVictorSPX Shooter2Motor = new PWMVictorSPX(Constants.SubsystemPorts.Shooter2Port);
   private final RelativeEncoder ShooterEncoder = Shooter1Motor.getEncoder();
+    private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
 
-  //private SparkClosedLoopController pidController;
 
-  // PID controller for speed control
 
-  // Working
 
-  // Working Here
-  //private final PIDController pid = new PIDController(0.0005, 0.0, 0.00); // Tune these values
-
-  // Target speed in encoder ticks per second
-  private double targetSpeed = 3000.0;
-
-  /*
-   * ShooterEncoder.setPositionConversionFactor(1.0); // Adjust based on your
-   * encoder specs
-   * ShooterEncoder.reset();
-   * 
-   * // Set PID tolerance
-   * pid.setTolerance(5.0); // ±5 ticks/sec tolerance
-   */
-  // public ShooterSubsystem() {
-  //   // For CAN
-  //   pidController = Shooter1Motor.getClosedLoopController();
-  //   SparkMaxConfig config = new SparkMaxConfig();
-
-  //   // Configure the PID gains
-  //   config.closedLoop
-  //       .p(0.1)
-  //       .i(0.0)
-  //       .d(0.01)
-  //       .velocityFF(0.00015)
-  //       .outputRange(-1, 1);
-
-  //   // Apply the configuration to the motor
-  //   Shooter1Motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-
-  //   // For PWM
-  //   // Shooter1Motor = new PWMSparkMax(Constants.SubsystemPorts.Shooter1Port);
-  //   // Shooter2Motor = new PWMSparkMax(Constants.SubsystemPorts.Shooter2Port);
-
-  // }
 
   /**
    * Example command factory method.
@@ -102,25 +67,21 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+  double currentSpeedRPM = ShooterEncoder.getVelocity(); // NEO default: RPM
+  SmartDashboard.putNumber("Shooter RPM", currentSpeedRPM);
   }
 
-//   public Command StartShoot() {
-//     return this.run(() -> {
-// /* 
-//       double currentSpeedRPM = ShooterEncoder.getVelocity(); // NEO default: RPM
+  public Command StartShoot() {
+    return this.run(() -> {
+    
+   double output = pid.calculate(ShooterEncoder.getVelocity(), Constants.SpeedChange.ShooterTargetSpeed);
+     SmartDashboard.putNumber("Shooter Output", output);
+        Shooter1Motor.set(output); // Send computed output to motor
 
-//       System.out.println("currentSpeed: " + currentSpeedRPM);
 
-//       // Calculate motor output from PID
-//       double output = pid.calculate(currentSpeedRPM, targetSpeed);
 
-//       System.out.println("Output: " + output);
-
-//       pidController.setReference(output, SparkMax.ControlType.kVelocity);
-// */
-//     });
-//   }
+    });
+  }
 
   public Command StopShoot() {
     return this.run(() -> {
@@ -131,19 +92,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command ReverseShoot() {
     return this.run(() -> {
-      Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
-      Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+       Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
+       Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
       System.out.println("Reverse Shoot Command Executed");
     });
    }
 
 
-
-     public Command StartShoot() {
-    return this.run(() -> {
-      Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedOut);
-      Shooter2Motor.set(Constants.MotorSpeeds.MaxShooterSpeedOut);
-      System.out.println("Forward Shoot Command Executed");
-    });
-   }
 }
