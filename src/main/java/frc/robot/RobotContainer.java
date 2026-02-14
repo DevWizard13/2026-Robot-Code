@@ -75,6 +75,7 @@ public class RobotContainer {
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
+               
                 m_driveSubsystem.arcadeDrive(rot, fwd);
               } else {
                 double left = applyDeadbandAndScale(-m_driverController.getLeftY());
