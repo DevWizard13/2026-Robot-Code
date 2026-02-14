@@ -48,6 +48,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  PhotonVision camera = new PhotonVision();
   // private final PhotonVision m_photonVision = new
   // PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
   // new Pose2d());
@@ -63,6 +64,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    boolean remoteOperated = true;
 
     // Configure the trigger bindings
 
@@ -72,14 +74,16 @@ public class RobotContainer {
         new RunCommand(
           
             () -> {
-              if (m_arcade) {
-                double rot = applyDeadbandAndScale(m_driverController.getRightX());
-                double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
-                m_driveSubsystem.arcadeDrive(rot, fwd);
-              } else {
-                double left = applyDeadbandAndScale(-m_driverController.getLeftY());
-                double right = applyDeadbandAndScale(m_driverController.getRightY());
-                m_driveSubsystem.tankDrive(left, right);
+              if (remoteOperated) {
+                if (m_arcade) {
+                  double rot = applyDeadbandAndScale(m_driverController.getRightX());
+                  double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
+                  m_driveSubsystem.arcadeDrive(rot, fwd);
+                } else {
+                  double left = applyDeadbandAndScale(-m_driverController.getLeftY());
+                  double right = applyDeadbandAndScale(m_driverController.getRightY());
+                  m_driveSubsystem.tankDrive(left, right);
+                }
               }
             },
             m_driveSubsystem));
@@ -98,6 +102,13 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
               //Speed Boost OFF
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
+
+    m_driverController.rightBumper().onTrue(new InstantCommand(() -> 
+      camera.aimAtTarget()
+      remoteOperated = false;
+    )).onFalse(new InstantCommand(() -> 
+      remoteOperated = true;
+    ))
 
     // // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
