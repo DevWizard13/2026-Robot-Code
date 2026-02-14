@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
+
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-// For PWM
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // For CAN
@@ -15,61 +13,124 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
 
-/**
- * Drive subsystem that groups left/right motor controllers and exposes drive
- * methods.
- */
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
+
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 public class DriveSubsystem extends SubsystemBase {
 
-   
-      //For CAN
-      private SparkMax leftMaster = new SparkMax(Constants.DrivePorts.LEFT_MASTER,
-      MotorType.kBrushless);
-      private SparkMax leftFollower = new
-      SparkMax(Constants.DrivePorts.LEFT_FOLLOWER, MotorType.kBrushless);
-      private SparkMax rightMaster = new
-      SparkMax(Constants.DrivePorts.RIGHT_MASTER, MotorType.kBrushless);
-      private SparkMax rightFollower = new
-      SparkMax(Constants.DrivePorts.RIGHT_FOLLOWER, MotorType.kBrushless);
-      
-      
+
     
-      
-     /* 
-    // For PWM
-    private final PWMSparkMax leftMaster = new PWMSparkMax(Constants.DrivePorts.LEFT_MASTER);
-    private final PWMSparkMax leftFollower = new PWMSparkMax(Constants.DrivePorts.LEFT_FOLLOWER);
-    private final PWMSparkMax rightMaster = new PWMSparkMax(Constants.DrivePorts.RIGHT_MASTER);
-    private final PWMSparkMax rightFollower = new PWMSparkMax(Constants.DrivePorts.RIGHT_FOLLOWER);
+   
+    private SparkMax leftMaster = new SparkMax(
+        Constants.DrivePorts.LEFT_MASTER, MotorType.kBrushless);
+    private SparkMax leftFollower = new SparkMax(
+        Constants.DrivePorts.LEFT_FOLLOWER, MotorType.kBrushless);
+    private SparkMax rightMaster = new SparkMax(
+        Constants.DrivePorts.RIGHT_MASTER, MotorType.kBrushless);
+    private SparkMax rightFollower = new SparkMax(
+        Constants.DrivePorts.RIGHT_FOLLOWER, MotorType.kBrushless);
 
 
-    */
-    private final MotorControllerGroup leftGroup = new MotorControllerGroup(leftMaster, leftFollower);
-    private final MotorControllerGroup rightGroup = new MotorControllerGroup(rightMaster, rightFollower);
+    private final MotorControllerGroup leftGroup =
+        new MotorControllerGroup(leftMaster, leftFollower);
+    private final MotorControllerGroup rightGroup =
+        new MotorControllerGroup(rightMaster, rightFollower);
 
-    private final DifferentialDrive drive = new DifferentialDrive(leftGroup, rightGroup);
 
+    private final DifferentialDrive drive =
+        new DifferentialDrive(leftGroup, rightGroup);
+
+
+    private Pose2d currentPose = new Pose2d();
 
 
     public DriveSubsystem() {
-        // Configure defaults here (inversion, safety, etc.) if needed
+
+
         drive.setSafetyEnabled(true);
 
-    }
 
-    /** Arcade drive helper (forward, rotation). */
+       
+        RobotConfig config;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+            config = new RobotConfig(0, 0, null, 0);
+
+
+       
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetPose,
+            this::getRobotRelativeSpeeds,
+            (speeds, feedforwards) -> driveRobotRelative(speeds),
+            new PPLTVController(0.02),
+            config,
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this
+        );
+    }
+}
+
+
+   
+   
     public void arcadeDrive(double fwd, double rot) {
         drive.arcadeDrive(fwd, rot);
     }
 
-    /** Tank drive helper (left, right). */
+
+
+
     public void tankDrive(double left, double right) {
         drive.tankDrive(left, right);
     }
 
+
     public void stop() {
         drive.stopMotor();
     }
+
+
+
+
+    public Pose2d getPose() {
+        return currentPose;
+    }
+
+
+    public void resetPose(Pose2d pose) {
+        currentPose = pose;
+    }
+
+
+    public ChassisSpeeds getRobotRelativeSpeeds() {
+       
+        return new ChassisSpeeds(0, 0, 0);
+    }
+
+
+    public void driveRobotRelative(ChassisSpeeds speeds) {
+        drive.arcadeDrive(
+            speeds.vxMetersPerSecond,
+            speeds.omegaRadiansPerSecond
+        );
+    }
+
 
     @Override
     public void periodic() {
@@ -82,3 +143,6 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
     }
 }
+
+
+

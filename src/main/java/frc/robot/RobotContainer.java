@@ -17,15 +17,16 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.AgitatorSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.*;
-import edu.wpi.first.math.geometry.*;
-import org.photonvision.PhotonCamera;
-
+//import frc.robot.subsystems.PhotonVision;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -54,6 +55,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
+  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   // Drive mode: false = tank, true = arcade (Default)
 
@@ -68,6 +70,7 @@ public class RobotContainer {
     // drive command
     m_driveSubsystem.setDefaultCommand(
         new RunCommand(
+          
             () -> {
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
@@ -83,6 +86,11 @@ public class RobotContainer {
 
     // Toggle drive mode  --  false = tank, true = arcade
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
+
+    autoChooser.setDefaultOption("Do Nothing", null);
+    autoChooser.addOption("Example Auto", Autos.exampleAuto(m_AgitatorSubsystem));
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Speed boost
     m_driverController.leftTrigger()
@@ -142,6 +150,11 @@ public class RobotContainer {
         .onTrue(m_ShooterSubsystem.ReverseShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
 
+
+            // Testing to see if the camera returns anything
+    // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
+    // m_photonVision.getPose("Arducam OV9782 USB Camera")));
+
     // Opertor Controls
     // Climber control
 
@@ -195,6 +208,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_AgitatorSubsystem);
+    return autoChooser.getSelected();
   }
 }
