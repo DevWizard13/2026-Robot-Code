@@ -182,15 +182,6 @@ public class RobotContainer {
     // m_photonVision.getPose("Arducam OV9782 USB Camera")));
     // Opertor Controls
     // Climber control
-
-
-
-      m_driverController.rightBumper()
-      .onTrue(
-          m_ShooterSubsystem.ReverseShoot())
-      
-      .onFalse(
-        m_ShooterSubsystem.StopShoot());
       
   
       m_operatorController.a()
