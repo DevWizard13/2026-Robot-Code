@@ -160,6 +160,8 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Front Temp C", rightMaster.getMotorTemperature());
         SmartDashboard.putNumber("Left Back Temp C", leftFollower.getMotorTemperature());
         SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
+        SmartDashboard.putNumber("Left Side Velocity", leftEncoder.getVelocity());
+        SmartDashboard.putNumber("Right Side Velocity", rightEncoder.getVelocity());
     }
 }
 
