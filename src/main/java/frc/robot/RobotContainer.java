@@ -75,7 +75,6 @@ public class RobotContainer {
     if (!remoteOperated) {
       m_driveSubsystem.setDefaultCommand(
         new RunCommand(
-          
           () -> {
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
@@ -160,14 +159,18 @@ public class RobotContainer {
     // We're gonna have to find a new button for one of the two
 
     m_driverController.rightBumper()
-      .onTrue(new InstantCommand(() -> {
+      .onTrue(new RunCommand(() -> {
         boolean isAimed = m_photonVision.aimAtTarget();
         driveDisabled = true;
         if (isAimed) {
           m_ShooterSubsystem.StartShoot();
+          return;
         }
       }))
-      .onFalse(new InstantCommand(() -> driveDisabled = false));
+      .onFalse(new InstantCommand(() -> {
+        driveDisabled = false;
+        m_ShooterSubsystem.StopShoot();
+      }));
 
 
             // Testing to see if the camera returns anything

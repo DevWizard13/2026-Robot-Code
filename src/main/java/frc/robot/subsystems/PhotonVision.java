@@ -100,7 +100,7 @@ public class PhotonVision {
       drive.arcadeDrive(0, turn);
     }
 
-    if (targetYaw != 0) {
+    if (Math.round(targetYaw) != 0) {
       return true;
     }
     else {

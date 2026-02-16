@@ -100,5 +100,4 @@ public class ShooterSubsystem extends SubsystemBase {
       System.out.println("Reverse Shoot Command Executed");
     });
   }
-
 }
