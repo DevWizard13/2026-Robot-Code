@@ -65,7 +65,9 @@ public class PhotonVision {
     }
   }
 
-  public void aimAtTarget() {
+  public boolean aimAtTarget() {
+    // I made it a bool so you can identify if it's corrrectly aimed
+
     PhotonCamera camera = robotCameras.get(0);
     boolean targetVisible = false;
     double turn = 0.0;
@@ -96,6 +98,13 @@ public class PhotonVision {
     if (targetVisible) {
       turn = -1.0 * targetYaw * turnModifier;
       drive.arcadeDrive(0, turn);
+    }
+
+    if (targetYaw != 0) {
+      return true;
+    }
+    else {
+      return false;
     }
   }
 }

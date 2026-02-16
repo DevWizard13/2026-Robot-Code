@@ -158,8 +158,11 @@ public class RobotContainer {
 
     m_driverController.rightBumper()
       .onTrue(new InstantCommand(() -> {
-        m_photonVision.aimAtTarget();
+        boolean isAimed = m_photonVision.aimAtTarget();
         driveDisabled = true;
+        if (isAimed) {
+          m_ShooterSubsystem.StartShoot();
+        }
       }))
       .onFalse(new InstantCommand(() -> driveDisabled = false));
 
