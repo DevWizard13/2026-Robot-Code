@@ -70,10 +70,10 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double currentSpeedRPM = ShooterEncoder.getVelocity() * speedModifier *
-                            camera.getDistanceToTag(); // NEO default: RPM
-    SmartDashboard.putNumber("Shooter RPM", currentSpeedRPM);
-    SmartDashboard.putNumber("Distance to Target", camera.getDistanceToTag());
+    SmartDashboard.putNumber("Shooter RPM", ShooterEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter Temp C", Shooter1Motor.getMotorTemperature());
+    SmartDashboard.putNumber("Shooter Current A", Shooter1Motor.getOutputCurrent());
+    SmartDashboard.putNumber("Shooter Voltage V", Shooter1Motor.getBusVoltage());
   }
 
   public Command StartShoot() {
@@ -100,4 +100,21 @@ public class ShooterSubsystem extends SubsystemBase {
       System.out.println("Reverse Shoot Command Executed");
     });
   }
+
+    //Named command for PathPlanner
+      public Command shoot_1_Command() {
+    return this.run(() -> {
+      ShooterEncoder.setPosition(0.0); // Reset encoder position to 0
+      if (ShooterEncoder.getPosition() < 42) { 
+        StartShoot();
+      } else {
+        StopShoot();
+      }
+    });
+  }
+
+
+
+
+
 }

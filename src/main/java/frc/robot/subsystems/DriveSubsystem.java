@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // For CAN
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 
 
@@ -36,6 +37,15 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.DrivePorts.RIGHT_MASTER, MotorType.kBrushless);
     private SparkMax rightFollower = new SparkMax(
         Constants.DrivePorts.RIGHT_FOLLOWER, MotorType.kBrushless);
+        //Encoders
+    private final RelativeEncoder rightEncoder = rightMaster.getEncoder();
+    private final RelativeEncoder leftEncoder = leftMaster.getEncoder();
+
+
+
+     // Tuning constant for correction
+    private static final double kP = 0.05; // Proportional gain
+
 
 
     private final MotorControllerGroup leftGroup =
@@ -52,6 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
     public DriveSubsystem() {
+
 
 
         drive.setSafetyEnabled(true);
@@ -90,7 +101,15 @@ public class DriveSubsystem extends SubsystemBase {
    
    
     public void arcadeDrive(double fwd, double rot) {
+      if (Math.abs(rot) < 0.05 && Math.abs(fwd) > 0.05) {
+            double error = leftEncoder.getPosition() - rightEncoder.getPosition();
+            double correction = error * kP;
+            drive.arcadeDrive(fwd, -correction);
+        } else {
+            // Normal arcade drive
         drive.arcadeDrive(fwd, rot);
+
+               }
     }
 
 
@@ -141,6 +160,8 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Front Temp C", rightMaster.getMotorTemperature());
         SmartDashboard.putNumber("Left Back Temp C", leftFollower.getMotorTemperature());
         SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
+        SmartDashboard.putNumber("Left Side Velocity", leftEncoder.getVelocity());
+        SmartDashboard.putNumber("Right Side Velocity", rightEncoder.getVelocity());
     }
 }
 

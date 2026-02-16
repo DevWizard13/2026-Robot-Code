@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.DriverStation;
+
 
 
 /**
@@ -52,14 +54,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled
-    // commands, running already-scheduled commands, removing finished or
-    // interrupted commands,
-    // and running subsystem periodic() methods. This must be called from the
-    // robot's periodic
-    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+     // Get match time from DriverStation
+        double timeRemaining = DriverStation.getMatchTime();
+
+        // If FMS is not connected, this may return -1
+        if (timeRemaining >= 0) {
+          int minutes = (int) timeRemaining / 60;
+          int seconds = (int) timeRemaining % 60;
+            SmartDashboard.putString("Match Time", String.format("%d:%02d", minutes, seconds));
+        } else {
+            SmartDashboard.putString("Match Time Remaining (s)", "N/A");
+        }
    
   }
 
