@@ -44,7 +44,7 @@ public class RobotContainer {
   // Max speed variable for drive scaling
   double speed = SpeedChange.maxNormalSpeed;
   public boolean m_arcade = true;
-  boolean drive_disabled = false;
+  boolean driveDisabled = false;
 
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
@@ -71,21 +71,23 @@ public class RobotContainer {
 
     configureBindings();
     // drive command
-    m_driveSubsystem.setDefaultCommand(
-        new RunCommand(
-          
-            () -> {
-              if (m_arcade) {
-                double rot = applyDeadbandAndScale(m_driverController.getRightX());
-                double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
-                m_driveSubsystem.arcadeDrive(rot, fwd);
-              } else {
-                double left = applyDeadbandAndScale(-m_driverController.getLeftY());
-                double right = applyDeadbandAndScale(m_driverController.getRightY());
-                m_driveSubsystem.tankDrive(left, right);
-              }
-            },
-            m_driveSubsystem));
+    if (!driveDisabled) {
+      m_driveSubsystem.setDefaultCommand(
+          new RunCommand(
+            
+              () -> {
+                if (m_arcade) {
+                  double rot = applyDeadbandAndScale(m_driverController.getRightX());
+                  double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
+                  m_driveSubsystem.arcadeDrive(rot, fwd);
+                } else {
+                  double left = applyDeadbandAndScale(-m_driverController.getLeftY());
+                  double right = applyDeadbandAndScale(m_driverController.getRightY());
+                  m_driveSubsystem.tankDrive(left, right);
+                }
+              },
+              m_driveSubsystem));
+    }
 
     // Toggle drive mode  --  false = tank, true = arcade
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
@@ -157,9 +159,9 @@ public class RobotContainer {
     m_driverController.rightBumper()
       .onTrue(new InstantCommand(() -> {
         m_photonVision.aimAtTarget();
-        drive_disabled = true;
+        driveDisabled = true;
       }))
-      .onFalse(new InstantCommand(() -> drive_disabled = false));
+      .onFalse(new InstantCommand(() -> driveDisabled = false));
 
 
             // Testing to see if the camera returns anything

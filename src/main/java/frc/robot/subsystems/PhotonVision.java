@@ -14,6 +14,7 @@ public class PhotonVision {
   List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
   Pose2d targetPose = new Pose2d();
   DriveSubsystem drive = new DriveSubsystem();
+  double turnModifier = 0.01;
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     List<PhotonCamera> robotCameras = cameras;
@@ -93,7 +94,7 @@ public class PhotonVision {
     }
 
     if (targetVisible) {
-      turn = -1.0 * targetYaw;
+      turn = -1.0 * targetYaw * turnModifier;
       drive.arcadeDrive(0, turn);
     }
   }
