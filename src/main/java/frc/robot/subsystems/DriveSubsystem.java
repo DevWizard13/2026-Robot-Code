@@ -91,16 +91,9 @@ public class DriveSubsystem extends SubsystemBase {
 
 
        
-        RobotConfig config;
         try {
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            e.printStackTrace();
-            config = new RobotConfig(55, 4.6, null, 0.66);
-
-        
-       
-        AutoBuilder.configure(
+            RobotConfig config = RobotConfig.fromGUISettings();
+                     AutoBuilder.configure(
             this::getPose,
             this::resetPose,
             this::getRobotRelativeSpeeds,
@@ -116,6 +109,13 @@ public class DriveSubsystem extends SubsystemBase {
             },
             this
         );
+        } catch (Exception e) {
+            e.printStackTrace();
+            //RobotConfig config = new RobotConfig(55, 4.6, null, 0.66);
+
+        
+       
+
     }
 }
 
