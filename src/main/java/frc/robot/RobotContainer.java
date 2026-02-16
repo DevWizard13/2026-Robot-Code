@@ -168,6 +168,9 @@ public class RobotContainer {
           m_ShooterSubsystem.StartShoot();
           return;
         }
+        if (!driveDisabled) {
+          return;
+        }
       }))
       .onFalse(new InstantCommand(() -> {
         //driveDisabled = false;

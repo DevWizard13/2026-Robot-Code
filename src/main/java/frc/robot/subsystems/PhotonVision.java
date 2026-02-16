@@ -15,7 +15,8 @@ public class PhotonVision {
   Pose2d targetPose = new Pose2d();
   DriveSubsystem drive = new DriveSubsystem();
   double turnModifier = 0.01;
-  float[] offset = {10, -10};
+  float[] offset = Constants.vision.cameraoffset;
+  float maxDistance = Constants.vision.maxDistanceToTarget;
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     robotCameras = cameras;
@@ -30,6 +31,8 @@ public class PhotonVision {
     	cameraEst.get(i).setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 	}
+
+  /*
 
 	public Optional<EstimatedRobotPose> getPose(String cameraName) {
 		// check to see which camera matches the desired name, and when it's found,
@@ -58,7 +61,7 @@ public class PhotonVision {
     Optional<EstimatedRobotPose> robotPose = getPose(Constants.vision.localizationCameraName[0]);
     if (robotPose.isEmpty()) {
       System.out.println("ERROR: cannot determine pose");
-      return 0f;
+      return (float)Double.POSITIVE_INFINITY;
     }
     else {
       Pose2d myPose = robotPose.get().estimatedPose.toPose2d();
@@ -72,6 +75,7 @@ public class PhotonVision {
     PhotonCamera camera = robotCameras.get(0);
     boolean targetVisible = false;
     double turn = 0.0;
+    double speed = 0.0;
     List<Double> targetYaw = new ArrayList<>();
     // I'll replace it with the camera at the front
 
@@ -89,7 +93,8 @@ public class PhotonVision {
           for (var target : result.getTargets()) {
             if (target.getFiducialId() == 7) {
               // Found Tag 7, record its information
-              targetYaw.add(target.getYaw());
+              targetYaw.add(target.getYaw() + 
+                  offset[robotCameras.indexOf(myCamera)]);
       
               targetVisible = true;
             }
@@ -101,9 +106,32 @@ public class PhotonVision {
     double avgTargetYaw = calculateAvg(targetYaw);
 
     if (targetVisible) {
-      turn = -1.0 * avgTargetYaw * turnModifier;
-      drive.arcadeDrive(0, turn);
+      if (Math.abs(avgTargetYaw) > 5.0) {
+        if (avgTargetYaw > 0) {
+          turn = -1.0;
+        } else {
+          turn = 1.0;
+        }
+      }
+      else if (Math.abs(avgTargetYaw) < 5.0) {
+        if (avgTargetYaw > 0) {
+          turn = -0.5;
+        } else {
+          turn = 0.5;
+        }
+      } 
     }
+    else {
+      System.out.println("Target not visible");
+    }
+
+    if (getDistanceToTag() > maxDistance) {
+      speed = 1.0;
+      drive.arcadeDrive(speed, turn);
+      return false;
+    }
+
+    drive.arcadeDrive(speed, turn);
 
     if (Math.round(avgTargetYaw) != 0) {
       return true;
@@ -121,5 +149,6 @@ public class PhotonVision {
     x = x / val.size();
     return x;
   }
+  */
 }
 */
