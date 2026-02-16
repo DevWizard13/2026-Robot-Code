@@ -9,18 +9,6 @@
           "data": {
             "pathName": "ForwardAuto"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot_1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SlowTest"
-          }
         }
       ]
     }

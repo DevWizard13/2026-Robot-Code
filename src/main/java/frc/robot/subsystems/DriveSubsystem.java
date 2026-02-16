@@ -96,9 +96,9 @@ public class DriveSubsystem extends SubsystemBase {
             config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
             e.printStackTrace();
-            config = new RobotConfig(0, 0, null, 0);
+            config = new RobotConfig(55, 4.6, null, 0.66);
 
-
+        
        
         AutoBuilder.configure(
             this::getPose,

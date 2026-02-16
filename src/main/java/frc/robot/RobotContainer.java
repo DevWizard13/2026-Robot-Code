@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.fasterxml.jackson.databind.util.Named;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -63,7 +64,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  private final SendableChooser<Command> autoChooser;
 
   // Drive mode: false = tank, true = arcade (Default)
 
@@ -71,6 +72,9 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+
     boolean remoteOperated = true;
 
     // Configure the trigger bindings
@@ -98,9 +102,6 @@ public class RobotContainer {
     // Toggle drive mode -- false = tank, true = arcade
   //  m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
   SmartDashboard.putData("Toggle Drive Mode", new InstantCommand(() -> m_arcade = !m_arcade));
-
-    autoChooser.setDefaultOption("Do Nothing", null);
-    autoChooser.addOption("Example Auto", Autos.exampleAuto(m_AgitatorSubsystem));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 

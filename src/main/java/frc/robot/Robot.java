@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
           int seconds = (int) timeRemaining % 60;
             SmartDashboard.putString("Match Time", String.format("%d:%02d", minutes, seconds));
         } else {
-            SmartDashboard.putString("Match Time Remaining (s)", "N/A");
+            SmartDashboard.putString("Match Time", "N/A");
         }
    
   }
