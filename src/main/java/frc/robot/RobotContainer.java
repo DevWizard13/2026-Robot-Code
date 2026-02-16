@@ -72,23 +72,24 @@ public class RobotContainer {
 
     configureBindings();
     // drive command
-    if (!driveDisabled) {
+    if (!remoteOperated) {
       m_driveSubsystem.setDefaultCommand(
-          new RunCommand(
-            
-              () -> {
-                if (m_arcade) {
-                  double rot = applyDeadbandAndScale(m_driverController.getRightX());
-                  double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
-                  m_driveSubsystem.arcadeDrive(rot, fwd);
-                } else {
-                  double left = applyDeadbandAndScale(-m_driverController.getLeftY());
-                  double right = applyDeadbandAndScale(m_driverController.getRightY());
-                  m_driveSubsystem.tankDrive(left, right);
-                }
+        new RunCommand(
+          
+          () -> {
+              if (m_arcade) {
+                double rot = applyDeadbandAndScale(m_driverController.getRightX());
+                double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
+               
+                m_driveSubsystem.arcadeDrive(rot, fwd);
+              } else {
+                double left = applyDeadbandAndScale(-m_driverController.getLeftY());
+                double right = applyDeadbandAndScale(m_driverController.getRightY());
+                m_driveSubsystem.tankDrive(left, right);
               }
             },
-            m_driveSubsystem));
+          m_driveSubsystem));
+    }
 
     // Toggle drive mode  --  false = tank, true = arcade
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
@@ -105,12 +106,6 @@ public class RobotContainer {
               //Speed Boost OFF
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
 
-    m_driverController.rightBumper().onTrue(new InstantCommand(() -> 
-      camera.aimAtTarget()
-      remoteOperated = false;
-    )).onFalse(new InstantCommand(() -> 
-      remoteOperated = true;
-    ))
 
     // // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
