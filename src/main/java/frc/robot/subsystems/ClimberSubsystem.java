@@ -78,8 +78,15 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
-    SmartDashboard.putNumber("Climber Position (Rotations)", positionRotations);
+
+        SmartDashboard.putNumber("Climber Supply Current", ClimbMotor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Climber Stator Current", ClimbMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Climber Temp C", ClimbMotor.getDeviceTemp().getValueAsDouble());
+        SmartDashboard.putNumber("Climber Position (Rotations)", ClimbMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Climber Supply Voltage", ClimbMotor.getSupplyVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Climber Applied Voltage", ClimbMotor.getMotorVoltage().getValueAsDouble());
+  
+
   }
 
   public Command StopClimb() {
@@ -100,7 +107,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command UpClimb() {
     return this.run(() -> {
       STOP = false;
-      if (positionRotations < 46 && !STOP) {
+      if (ClimbMotor.getPosition().getValueAsDouble() < 46 && !STOP) {
         ClimbMotor.setControl(percentOutput.withOutput(0.2));
       } else {
         StopClimb();
@@ -112,7 +119,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command DownClimb() {
     return this.run(() -> {
       STOP = false;
-      if (positionRotations > 4 && !STOP) {
+      if (ClimbMotor.getPosition().getValueAsDouble() > 4 && !STOP) {
         ClimbMotor.setControl(percentOutput.withOutput(-0.2));
       } else {
         StopClimb();
