@@ -159,6 +159,9 @@ public class RobotContainer {
     // Opertor Controls
     // Climber control
 
+
+
+
     // Climber Up All the way
     m_operatorController.povUp()
         .onTrue(m_ClimberSubsystem.UpClimb());
@@ -166,10 +169,6 @@ public class RobotContainer {
     // Climber Down All the way
     m_operatorController.povDown()
         .onTrue(m_ClimberSubsystem.DownClimb());
-
-    // Zero Climb Encoder
-    m_operatorController.y()
-        .onChange(m_ClimberSubsystem.ZeroClimb());
 
     // Stop Climb
     m_operatorController.x()

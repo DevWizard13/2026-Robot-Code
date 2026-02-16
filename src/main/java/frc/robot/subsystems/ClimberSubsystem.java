@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -79,6 +80,8 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
+
+
         SmartDashboard.putNumber("Climber Supply Current", ClimbMotor.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Climber Stator Current", ClimbMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Climber Temp C", ClimbMotor.getDeviceTemp().getValueAsDouble());
@@ -86,44 +89,41 @@ public class ClimberSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Climber Supply Voltage", ClimbMotor.getSupplyVoltage().getValueAsDouble());
         SmartDashboard.putNumber("Climber Applied Voltage", ClimbMotor.getMotorVoltage().getValueAsDouble());
   
+          SmartDashboard.putData("Zero Climber", new InstantCommand(() -> ClimbMotor.setPosition(0.0)));
 
   }
 
   public Command StopClimb() {
     return this.run(() -> {
       ClimbMotor.setControl(percentOutput.withOutput(0.0));
-      STOP = true;
     });
   }
 
-  public Command ZeroClimb() {
-    return this.runOnce(() -> {
-      ClimbMotor.setPosition(0.0);
-      System.out.println("Climber Zeroed");
-    });
-  }
 
 
   public Command UpClimb() {
     return this.run(() -> {
-      STOP = false;
-      if (ClimbMotor.getPosition().getValueAsDouble() < 46 && !STOP) {
-        ClimbMotor.setControl(percentOutput.withOutput(0.2));
-      } else {
-        StopClimb();
-      }
+      
+    ClimbMotor.setControl(percentOutput.withOutput(0.2));
+    })
+    .until(() -> 
+    ClimbMotor.getPosition().getValueAsDouble() >= 30.0 )
+    .finallyDo(() -> {
+      ClimbMotor.setControl(percentOutput.withOutput(0.0));
+
     });
   }
 
 
   public Command DownClimb() {
-    return this.run(() -> {
-      STOP = false;
-      if (ClimbMotor.getPosition().getValueAsDouble() > 4 && !STOP) {
-        ClimbMotor.setControl(percentOutput.withOutput(-0.2));
-      } else {
-        StopClimb();
-      }
+    return this.run(() -> 
+    {
+      ClimbMotor.setControl(percentOutput.withOutput(-0.2));
+    })
+    .until(() -> 
+    ClimbMotor.getPosition().getValueAsDouble() <= 4.0 )
+    .finallyDo(() -> {
+      ClimbMotor.setControl(percentOutput.withOutput(0.0));
 
     });
 

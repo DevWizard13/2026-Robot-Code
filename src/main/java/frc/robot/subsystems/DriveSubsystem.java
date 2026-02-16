@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // For CAN
@@ -58,10 +59,31 @@ public class DriveSubsystem extends SubsystemBase {
         new DifferentialDrive(leftGroup, rightGroup);
 
 
+        
+
+
+
+
+
+
+
+
+
+
+
+
     private Pose2d currentPose = new Pose2d();
 
 
     public DriveSubsystem() {
+
+
+
+
+
+
+
+
 
 
 
@@ -151,6 +173,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
+
+
+
+
     @Override
     public void periodic() {
         // Put periodic subsystem code here (telemetry, safety checks)
@@ -162,8 +188,20 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
         SmartDashboard.putNumber("Left Side Velocity", leftEncoder.getVelocity());
         SmartDashboard.putNumber("Right Side Velocity", rightEncoder.getVelocity());
-    }
-}
+
+
+
+        boolean isHot =  leftMaster.getMotorTemperature() > 50 ||  rightMaster.getMotorTemperature() > 50 ||  leftFollower.getMotorTemperature() > 50 ||  rightFollower.getMotorTemperature() > 50;
+        SmartDashboard.putBoolean("Drive Overheating", isHot);
+
+
+
+
+
+
+
+
+}}
 
 
 

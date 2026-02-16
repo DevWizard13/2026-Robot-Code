@@ -89,8 +89,8 @@ public final class Constants {
     public static final class SubsystemPorts {
         // CAN Ports
         // Shooter Ports
-        public static final int Shooter1Port = 10;
-        public static final int Shooter2Port = 6;
+        public static final int Shooter1Port = 7;
+        public static final int Shooter2Port = 0;
         // Climber Port
         public static final int ClimberPort = 9;
         // Intake Port
