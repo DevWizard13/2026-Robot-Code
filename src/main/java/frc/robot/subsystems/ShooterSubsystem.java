@@ -64,6 +64,12 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     double currentSpeedRPM = ShooterEncoder.getVelocity(); // NEO default: RPM
     SmartDashboard.putNumber("Shooter RPM", currentSpeedRPM);
+    double motorHeat = Shooter1Motor.getMotorTemperature();
+    SmartDashboard.putNumber("Shooter Temp C", motorHeat);
+    double motorCurrent = Shooter1Motor.getOutputCurrent();
+    SmartDashboard.putNumber("Shooter Current A", motorCurrent);
+    double motorVoltage = Shooter1Motor.getAppliedOutput() * 12.0; // Convert to volts
+    SmartDashboard.putNumber("Shooter Voltage V", motorVoltage);
   }
 
   public Command StartShoot() {

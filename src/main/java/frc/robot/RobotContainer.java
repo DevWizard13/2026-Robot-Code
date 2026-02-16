@@ -91,7 +91,8 @@ public class RobotContainer {
             m_driveSubsystem));
 
     // Toggle drive mode -- false = tank, true = arcade
-    m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
+  //  m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
+  SmartDashboard.putData("Toggle Drive Mode", new InstantCommand(() -> m_arcade = !m_arcade));
 
     autoChooser.setDefaultOption("Do Nothing", null);
     autoChooser.addOption("Example Auto", Autos.exampleAuto(m_AgitatorSubsystem));
@@ -124,7 +125,6 @@ public class RobotContainer {
 
 
 
-
     //Register named commands for use in PathPlanner autonomous paths
   private void registerNamedCommands() {
     NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.shoot_1_Command());
@@ -139,10 +139,6 @@ public class RobotContainer {
   };
 
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // new Trigger(m_ShooterSubsystem::exampleCondition)
-    // .onTrue(new ExampleCommand(m_ShooterSubsystem));
-
     // Driver Controls
     // Shooter control
 
