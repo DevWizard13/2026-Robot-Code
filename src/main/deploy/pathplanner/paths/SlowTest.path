@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
+        "x": 3.4387950450450457,
         "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.98562678062678,
+        "x": 4.424421825671826,
         "y": 6.967891737891738
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "End of Forward Auto"
     },
     {
       "anchor": {

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -74,12 +75,12 @@ public class RobotContainer {
     // drive command
     m_driveSubsystem.setDefaultCommand(
         new RunCommand(
-          
+
             () -> {
-              if (m_arcade)          {
+              if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
-               
+
                 m_driveSubsystem.arcadeDrive(rot, fwd);
               } else {
                 double left = applyDeadbandAndScale(-m_driverController.getLeftY());
@@ -89,7 +90,7 @@ public class RobotContainer {
             },
             m_driveSubsystem));
 
-    // Toggle drive mode  --  false = tank, true = arcade
+    // Toggle drive mode -- false = tank, true = arcade
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
 
     autoChooser.setDefaultOption("Do Nothing", null);
@@ -99,9 +100,9 @@ public class RobotContainer {
 
     // Speed boost
     m_driverController.leftTrigger()
-              //Speed Boost ON
+        // Speed Boost ON
         .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
-              //Speed Boost OFF
+        // Speed Boost OFF
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
 
     // // Testing to see if the camera returns anything
@@ -120,71 +121,53 @@ public class RobotContainer {
         value);
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-
-
-        private void registerNamedCommands() {
-          //Register named commands here for use in PathPlanner autonomous paths
-        NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.shoot_1_Command());
-        NamedCommands.registerCommand("Climb_Up", m_ClimberSubsystem.UpClimb());
-        NamedCommands.registerCommand("Climb_Down", m_ClimberSubsystem.DownClimb());
-        };
 
 
 
 
-
-
-
-
+    //Register named commands for use in PathPlanner autonomous paths
+  private void registerNamedCommands() {
+    NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.shoot_1_Command());
+    NamedCommands.registerCommand("Shooter_ON", m_ShooterSubsystem.StartShoot());
+    NamedCommands.registerCommand("Shooter_OFF", m_ShooterSubsystem.StopShoot());
+    NamedCommands.registerCommand("Climb_UP", m_ClimberSubsystem.UpClimb());
+    NamedCommands.registerCommand("Climb_DOWN", m_ClimberSubsystem.DownClimb());
+    NamedCommands.registerCommand("Intake_ON", m_IntakeSubsystem.StartIntake());
+    NamedCommands.registerCommand("Intake_OFF", m_IntakeSubsystem.StopIntake());
+    NamedCommands.registerCommand("Agitator_ON", m_AgitatorSubsystem.StartAgitator());
+    NamedCommands.registerCommand("Agitator_OFF", m_AgitatorSubsystem.StopAgitator());  
+  };
 
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // new Trigger(m_ShooterSubsystem::exampleCondition)
     // .onTrue(new ExampleCommand(m_ShooterSubsystem));
 
-
-
     // Driver Controls
     // Shooter control
 
-      //Start Shooter (constant speed)
+    // Start Shooter (constant speed)
     m_driverController.rightTrigger()
         .onTrue(m_ShooterSubsystem.StartShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
 
-
-      //Reverse Shooter
+    // Reverse Shooter
     m_driverController.rightBumper()
         .onTrue(m_ShooterSubsystem.ReverseShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
 
-
-            // Testing to see if the camera returns anything
+    // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
     // m_photonVision.getPose("Arducam OV9782 USB Camera")));
 
     // Opertor Controls
     // Climber control
 
-        //Climber Up All the way
+    // Climber Up All the way
     m_operatorController.povUp()
         .onTrue(m_ClimberSubsystem.UpClimb());
 
-        //Climber Down All the way
+    // Climber Down All the way
     m_operatorController.povDown()
         .onTrue(m_ClimberSubsystem.DownClimb());
 
@@ -196,26 +179,24 @@ public class RobotContainer {
     m_operatorController.x()
         .onTrue(m_ClimberSubsystem.StopClimb());
 
-
-
     // Intake control
-       //Start Intake
+    // Start Intake
     m_operatorController.rightTrigger()
         .onTrue(m_IntakeSubsystem.StartIntake())
         .onFalse(m_IntakeSubsystem.StopIntake());
 
-        //Stop Intake
+    // Stop Intake
     m_operatorController.rightBumper()
         .onTrue(m_IntakeSubsystem.ReverseIntake())
         .onFalse(m_IntakeSubsystem.StopIntake());
 
-       //Agitator Control
-         //Agitaor Forward
+    // Agitator Control
+    // Agitaor Forward
     m_operatorController.leftTrigger()
         .onTrue(m_AgitatorSubsystem.StartAgitator())
         .onFalse(m_AgitatorSubsystem.StopAgitator());
 
-          //Agitator reverse
+    // Agitator reverse
     m_operatorController.leftBumper()
         .onTrue(m_AgitatorSubsystem.ReverseAgitator())
         .onFalse(m_AgitatorSubsystem.StopAgitator());
