@@ -123,9 +123,14 @@ public class DriveSubsystem extends SubsystemBase {
    
    
     public void arcadeDrive(double fwd, double rot) {
-            // Normal arcade drive
+        if (Math.abs(fwd) > 0.05 && Math.abs(rot) < 0.05) {
+           double correction = leftEncoder.getVelocity() - rightEncoder.getVelocity() * 0.00001;
+            drive.arcadeDrive(fwd, -correction);
+            return;
+        } else {
+        // Normal arcade drive
         drive.arcadeDrive(fwd, rot);
-       
+        }
     }
 
 
@@ -139,7 +144,6 @@ public class DriveSubsystem extends SubsystemBase {
     public void stop() {
         drive.stopMotor();
     }
-
 
 
 
