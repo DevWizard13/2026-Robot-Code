@@ -27,6 +27,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -65,14 +69,14 @@ public class RobotContainer {
   public RobotContainer() {
 
     // Configure the trigger bindings
-
+    registerNamedCommands();
     configureBindings();
     // drive command
     m_driveSubsystem.setDefaultCommand(
         new RunCommand(
           
             () -> {
-              if (m_arcade) {
+              if (m_arcade)          {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
                
@@ -130,6 +134,23 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
+
+
+        private void registerNamedCommands() {
+          //Register named commands here for use in PathPlanner autonomous paths
+        NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.shoot_1_Command());
+        NamedCommands.registerCommand("Climb_Up", m_ClimberSubsystem.UpClimb());
+        NamedCommands.registerCommand("Climb_Down", m_ClimberSubsystem.DownClimb());
+        };
+
+
+
+
+
+
+
+
+
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // new Trigger(m_ShooterSubsystem::exampleCondition)

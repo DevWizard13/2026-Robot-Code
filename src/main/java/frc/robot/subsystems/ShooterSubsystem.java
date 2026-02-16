@@ -91,4 +91,19 @@ public class ShooterSubsystem extends SubsystemBase {
     });
   }
 
+    //Named command for PathPlanner
+      public Command shoot_1_Command() {
+    return this.run(() -> {
+      if (ShooterEncoder.getPosition() < 360) { 
+        StartShoot();
+      } else {
+        StopShoot();
+      }
+    });
+  }
+
+
+
+
+
 }
