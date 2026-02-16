@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+//import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -20,27 +20,29 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
   // Duty cycle control request (percent output)
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
+ // private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
   private final DutyCycleOut percentOutput = new DutyCycleOut(0);
-  private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
+ // private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
 
   boolean STOP = false;
 
   public ClimberSubsystem() {
 
+
+      SmartDashboard.putData("Zero Climber", new InstantCommand(() -> ClimbMotor.setPosition(0.0)));
     CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
 
     // ----- SUPPLY CURRENT LIMIT -----
     currentLimits.SupplyCurrentLimit = 10; // Amps
-    currentLimits.SupplyCurrentLimitEnable = true;
+    currentLimits.SupplyCurrentLimitEnable = false;
     // currentLimits.SupplyCurrentThreshold = 60; // Amps before limiting kicks in
     // currentLimits.SupplyTimeThreshold = 0.5; // Seconds over threshold before
     // limiting
 
     // ----- STATOR CURRENT LIMIT -----
     currentLimits.StatorCurrentLimit = 10; // Amps
-    currentLimits.StatorCurrentLimitEnable = true;
+    currentLimits.StatorCurrentLimitEnable = false;
     System.out.println("Climber Current Limits Configured");
     // Apply the configuration to the motor
     ClimbMotor.getConfigurator().apply(currentLimits);
@@ -82,14 +84,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
 
 
-        SmartDashboard.putNumber("Climber Supply Current", ClimbMotor.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Climber Stator Current", ClimbMotor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Climber Temp C", ClimbMotor.getDeviceTemp().getValueAsDouble());
-        SmartDashboard.putNumber("Climber Position (Rotations)", ClimbMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Climber Supply Voltage", ClimbMotor.getSupplyVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("Climber Applied Voltage", ClimbMotor.getMotorVoltage().getValueAsDouble());
+        // SmartDashboard.putNumber("Climber Supply Current", ClimbMotor.getSupplyCurrent().getValueAsDouble());
+        // SmartDashboard.putNumber("Climber Stator Current", ClimbMotor.getStatorCurrent().getValueAsDouble());
+        // SmartDashboard.putNumber("Climber Temp C", ClimbMotor.getDeviceTemp().getValueAsDouble());
+         SmartDashboard.putNumber("Climber Position (Rotations)", ClimbMotor.getPosition().getValueAsDouble());
+        // SmartDashboard.putNumber("Climber Supply Voltage", ClimbMotor.getSupplyVoltage().getValueAsDouble());
+        // SmartDashboard.putNumber("Climber Applied Voltage", ClimbMotor.getMotorVoltage().getValueAsDouble());
   
-          SmartDashboard.putData("Zero Climber", new InstantCommand(() -> ClimbMotor.setPosition(0.0)));
+        
 
   }
 
@@ -107,19 +109,35 @@ public class ClimberSubsystem extends SubsystemBase {
     ClimbMotor.setControl(percentOutput.withOutput(0.2));
     })
     .until(() -> 
-    ClimbMotor.getPosition().getValueAsDouble() >= 30.0 )
+    ClimbMotor.getPosition().getValueAsDouble() >= 48.0 )
     .finallyDo(() -> {
       ClimbMotor.setControl(percentOutput.withOutput(0.0));
 
     });
   }
 
+public Command OverDown(){
+  return this.run(() -> 
+  {
+    ClimbMotor.setControl(percentOutput.withOutput(-0.2));
+ 
+  });
+}
+
+
+
+
+
+
+
+
 
   public Command DownClimb() {
     return this.run(() -> 
     {
-      ClimbMotor.setControl(percentOutput.withOutput(-0.2));
-    })
+  
+      ClimbMotor.setControl(percentOutput.withOutput(-0.3));
+  })
     .until(() -> 
     ClimbMotor.getPosition().getValueAsDouble() <= 4.0 )
     .finallyDo(() -> {

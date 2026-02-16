@@ -11,6 +11,10 @@ import frc.robot.Constants.Controls.Driver;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.*;
+import org.photonvision.*;
+import edu.wpi.first.math.geometry.*;
+
 // For CAN
 import com.revrobotics.spark.SparkMax;
 import org.ejml.equation.IntegerSequence.For;
@@ -36,15 +40,18 @@ public class ShooterSubsystem extends SubsystemBase {
   //private final PIDController pid = new PIDController(0, 0.0, 0.0);
   SparkClosedLoopController m_pidController = Shooter1Motor.getClosedLoopController();
   SparkMaxConfig m_config = new SparkMaxConfig();
-
-
+  double P = 0.8;//0008;
+  double I = 0;
+  double D = 0.0; //0009
+  double velocityFF = 0.00; //000175
 
   public ShooterSubsystem() {
-     m_config.closedLoop
-          .p(0.0005)
-          .i(0)
-          .d(0.0001)
-          .velocityFF(0.000175)
+    // Configure the PID controller with the desired gains and settings
+  m_config.closedLoop
+          .p(P)
+          .i(I)
+          .d(D)
+          .velocityFF(velocityFF)
           .outputRange(-1, 1);
 
 
@@ -52,11 +59,17 @@ public class ShooterSubsystem extends SubsystemBase {
   SparkMax.ResetMode.kResetSafeParameters,
   SparkMax.PersistMode.kPersistParameters);
 
-
-
   }
 
+
+
  
+
+   
+  final double speedModifier = 0.25;
+  //PhotonVision camera = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
+  //new Pose2d());
+
   /**
    * Example command factory method.
    *
@@ -85,18 +98,18 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter RPM", ShooterEncoder.getVelocity());
-    SmartDashboard.putNumber("Shooter Temp C", Shooter1Motor.getMotorTemperature());
-    SmartDashboard.putNumber("Shooter Current A", Shooter1Motor.getOutputCurrent());
-    SmartDashboard.putNumber("Shooter Voltage V", Shooter1Motor.getBusVoltage());
+
+      
+SmartDashboard.putNumber("Shooter RPM", ShooterEncoder.getVelocity());
+
   }
 
   public Command StartShoot() {
     return this.run(() -> {
 
-      m_pidController.setReference(3000, SparkMax.ControlType.kVelocity);
-      Shooter2Motor.set(0.4);
-
+     // m_pidController.setReference(3500, SparkMax.ControlType.kVelocity);
+      Shooter2Motor.set(0.76);
+      Shooter1Motor.set(0.7);
     });
   }
 
@@ -109,8 +122,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command ReverseShoot() {
     return this.run(() -> {
-      Shooter1Motor.set(Constants.MotorSpeeds.MaxShooterSpeedIn);
-      Shooter2Motor.set(0.4);
+      Shooter1Motor.set(-0.2);
+      Shooter2Motor.set(-0.2);
       System.out.println("Reverse Shoot Command Executed");
     });
   }

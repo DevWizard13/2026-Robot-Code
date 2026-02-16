@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // For CAN
 
-  //  IntakeMotor = new SparkMax(Constants.SubsystemPorts.IntakePort, MotorType.kBrushless);
+    IntakeMotor = new SparkMax(Constants.SubsystemPorts.IntakePort, MotorType.kBrushless);
 
     // For PWM
     // IntakeMotor = new PWMSparkMax(Constants.SubsystemPorts.IntakePort);
@@ -61,19 +61,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command StartIntake() {
     return this.run(() -> {
-     // IntakeMotor.set(Constants.MotorSpeeds.MaxIntakeSpeed);
+      IntakeMotor.set(Constants.MotorSpeeds.MaxIntakeSpeed);
     });
   }
 
   public Command ReverseIntake() {
     return this.run(() -> {
-     // IntakeMotor.set(-Constants.MotorSpeeds.MaxIntakeSpeed);
+      IntakeMotor.set(-Constants.MotorSpeeds.MaxIntakeSpeed);
     });
   }
 
   public Command StopIntake() {
     return this.run(() -> {
-     // IntakeMotor.set(0);
+      IntakeMotor.set(0);
     });
   }
 

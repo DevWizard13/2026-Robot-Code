@@ -1,5 +1,5 @@
-package frc.robot.subsystems;
-/*import java.util.Optional;
+/*package frc.robot.subsystems;
+import java.util.Optional;
 
 import java.util.*;
 
@@ -10,14 +10,15 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.Constants;
 
 public class PhotonVision {
-	
-	
 	List<PhotonCamera> robotCameras;
   List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
   Pose2d targetPose = new Pose2d();
+  DriveSubsystem drive = new DriveSubsystem();
+  double turnModifier = 0.01;
+  float[] offset = {10, -10};
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
-    List<PhotonCamera> robotCameras = cameras;
+    robotCameras = cameras;
     targetPose = target;
 
     // Make a list of PhotonPoseEstimators
@@ -53,8 +54,8 @@ public class PhotonVision {
 		}
 	}
 
-  public float getDistanceToTag(String cameraName) {
-    Optional<EstimatedRobotPose> robotPose = getPose(cameraName);
+  public float getDistanceToTag() {
+    Optional<EstimatedRobotPose> robotPose = getPose(Constants.vision.localizationCameraName[0]);
     if (robotPose.isEmpty()) {
       System.out.println("ERROR: cannot determine pose");
       return 0f;
@@ -64,6 +65,61 @@ public class PhotonVision {
       return (float)PhotonUtils.getDistanceToPose(myPose, targetPose);
     }
   }
-	
+
+  public boolean aimAtTarget() {
+    // I made it a bool so you can identify if it's corrrectly aimed
+
+    PhotonCamera camera = robotCameras.get(0);
+    boolean targetVisible = false;
+    double turn = 0.0;
+    List<Double> targetYaw = new ArrayList<>();
+    // I'll replace it with the camera at the front
+
+    for (PhotonCamera myCamera : robotCameras) {
+      var results = myCamera.getAllUnreadResults();
+      
+      if (!results.isEmpty()) {
+        // Camera processed a new frame since last
+        // Get the last one in the list.
+      
+        var result = results.get(results.size() - 1);
+      
+        if (result.hasTargets()) {
+          // At least one AprilTag was seen by the camera
+          for (var target : result.getTargets()) {
+            if (target.getFiducialId() == 7) {
+              // Found Tag 7, record its information
+              targetYaw.add(target.getYaw());
+      
+              targetVisible = true;
+            }
+          }
+        }
+      }
+    }
+
+    double avgTargetYaw = calculateAvg(targetYaw);
+
+    if (targetVisible) {
+      turn = -1.0 * avgTargetYaw * turnModifier;
+      drive.arcadeDrive(0, turn);
+    }
+
+    if (Math.round(avgTargetYaw) != 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  double calculateAvg(List<Double> val) {
+    double x = 0.0;
+    for (double i : val){
+      x += i;
+    };
+    x = x / val.size();
+    return x;
+  }
 }
 */

@@ -94,7 +94,7 @@ public final class Constants {
         // Climber Port
         public static final int ClimberPort = 9;
         // Intake Port
-        public static final int IntakePort = 8;
+        public static final int IntakePort = 12;
         // Agitator Port
         public static final int AgitatorPort = 15;
     }
@@ -102,7 +102,7 @@ public final class Constants {
     public static final class MotorSpeeds {
         public static final double MaxShooterSpeedOut = 0.55;// Shooter = 55%
         public static final double MaxShooterSpeedIn = -0.24; // Shooter = 8%
-        public static final double MaxIntakeSpeed = 0.40; // IntakeSpeed = 40%
+        public static final double MaxIntakeSpeed = 0.20; // IntakeSpeed = 40%
         public static final double MaxAgitatorSpeed = 0.30; // Agitator Speed = 30%
         public static final double ClimberSpeed = 0.10; // Climber Speed = 10%
     }

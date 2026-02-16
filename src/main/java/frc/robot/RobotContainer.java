@@ -11,6 +11,9 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.DriveSubsystem;
 //import frc.robot.subsystems.ExampleSubsystem;
 //import frc.robot.subsystems.PhotonVision;
+import java.util.*;
+import org.photonvision.PhotonCamera;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -24,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-//import frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -47,15 +49,16 @@ public class RobotContainer {
   // Max speed variable for drive scaling
   double speed = SpeedChange.maxNormalSpeed;
   public boolean m_arcade = true;
+  boolean driveDisabled = false;
 
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  // private final PhotonVision m_photonVision = new
-  // PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
-  // new Pose2d());
+ // private final PhotonVision m_photonVision = new
+//  PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
+ // new Pose2d());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
@@ -68,19 +71,20 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    boolean remoteOperated = true;
 
     // Configure the trigger bindings
     registerNamedCommands();
     configureBindings();
     // drive command
-    m_driveSubsystem.setDefaultCommand(
+   // if (!remoteOperated) {
+      m_driveSubsystem.setDefaultCommand(
         new RunCommand(
-
-            () -> {
+          () -> {
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
-
+               
                 m_driveSubsystem.arcadeDrive(rot, fwd);
               } else {
                 double left = applyDeadbandAndScale(-m_driverController.getLeftY());
@@ -88,7 +92,8 @@ public class RobotContainer {
                 m_driveSubsystem.tankDrive(left, right);
               }
             },
-            m_driveSubsystem));
+          m_driveSubsystem));
+   // }
 
     // Toggle drive mode -- false = tank, true = arcade
   //  m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
@@ -105,6 +110,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
         // Speed Boost OFF
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
+
 
     // // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
@@ -147,18 +153,51 @@ public class RobotContainer {
         .onTrue(m_ShooterSubsystem.StartShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
 
-    // Reverse Shooter
-    m_driverController.rightBumper()
-        .onTrue(m_ShooterSubsystem.ReverseShoot())
-        .onFalse(m_ShooterSubsystem.StopShoot());
 
+      //Reverse Shooter
+    //m_driverController.rightBumper()
+    //    .onTrue(m_ShooterSubsystem.ReverseShoot())
+    //    .onFalse(m_ShooterSubsystem.StopShoot());
+    // We're gonna have to find a new button for one of the two
+
+   /*  m_driverController.rightBumper()
+      .onTrue(new RunCommand(() -> {
+       // boolean isAimed = m_photonVision.aimAtTarget();
+       // driveDisabled = true;
+        if (isAimed) {
+          m_ShooterSubsystem.StartShoot();
+          return;
+        }
+      }))
+      .onFalse(new InstantCommand(() -> {
+        //driveDisabled = false;
+        m_ShooterSubsystem.StopShoot();
+      }));
+*/
     // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
     // m_photonVision.getPose("Arducam OV9782 USB Camera")));
-
     // Opertor Controls
     // Climber control
 
+
+
+      m_driverController.rightBumper()
+      .onTrue(
+          m_ShooterSubsystem.ReverseShoot())
+      
+      .onFalse(
+        m_ShooterSubsystem.StopShoot());
+      
+  
+      m_operatorController.a()
+      .onTrue(
+          m_ClimberSubsystem.OverDown())
+      
+      .onFalse(
+        m_ClimberSubsystem.StopClimb());
+      
+  
 
 
 

@@ -123,15 +123,9 @@ public class DriveSubsystem extends SubsystemBase {
    
    
     public void arcadeDrive(double fwd, double rot) {
-      if (Math.abs(rot) < 0.05 && Math.abs(fwd) > 0.05) {
-            double error = leftEncoder.getPosition() - rightEncoder.getPosition();
-            double correction = error * kP;
-            drive.arcadeDrive(fwd, -correction);
-        } else {
             // Normal arcade drive
         drive.arcadeDrive(fwd, rot);
-
-               }
+       
     }
 
 
@@ -182,12 +176,12 @@ public class DriveSubsystem extends SubsystemBase {
         // Put periodic subsystem code here (telemetry, safety checks)
 
         // Display motor temperatures on SmartDashboard
-        SmartDashboard.putNumber("Left Front Temp C", leftMaster.getMotorTemperature());
-        SmartDashboard.putNumber("Right Front Temp C", rightMaster.getMotorTemperature());
-        SmartDashboard.putNumber("Left Back Temp C", leftFollower.getMotorTemperature());
-        SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
-        SmartDashboard.putNumber("Left Side Velocity", leftEncoder.getVelocity());
-        SmartDashboard.putNumber("Right Side Velocity", rightEncoder.getVelocity());
+        // SmartDashboard.putNumber("Left Front Temp C", leftMaster.getMotorTemperature());
+        // SmartDashboard.putNumber("Right Front Temp C", rightMaster.getMotorTemperature());
+        // SmartDashboard.putNumber("Left Back Temp C", leftFollower.getMotorTemperature());
+        // SmartDashboard.putNumber("Right Back Temp C", rightFollower.getMotorTemperature());
+        // SmartDashboard.putNumber("Left Side Velocity", leftEncoder.getVelocity());
+        // SmartDashboard.putNumber("Right Side Velocity", rightEncoder.getVelocity());
 
 
 
