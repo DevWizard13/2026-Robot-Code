@@ -101,8 +101,20 @@ public class PhotonVision {
     double avgTargetYaw = calculateAvg(targetYaw);
 
     if (targetVisible) {
-      turn = -1.0 * avgTargetYaw * turnModifier;
-      drive.arcadeDrive(0, turn);
+      if (Math.abs(avgTargetYaw > 5.0)) {
+        if (avgTargetYaw > 0) {
+          drive.arcadeDrive(0, 1);
+        } else {
+          drive.arcadeDrive(0, -1);
+        }
+      }
+      else if (Math.abs(avgTargetYaw < 5.0)) {
+        if (avgTargetYaw > 0) {
+          drive.arcadeDrive(0, 0.5);
+        } else {
+          drive.arcadeDrive(0, -0.5);
+        }
+      } 
     }
 
     if (Math.round(avgTargetYaw) != 0) {
