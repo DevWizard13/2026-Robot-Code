@@ -15,7 +15,7 @@ public class PhotonVision {
   Pose2d targetPose = new Pose2d();
   DriveSubsystem drive = new DriveSubsystem();
   double turnModifier = 0.01;
-  float[] offset = {10, -10};
+  float[] offset = Constants.vision.cameraoffset;
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     robotCameras = cameras;
@@ -89,7 +89,8 @@ public class PhotonVision {
           for (var target : result.getTargets()) {
             if (target.getFiducialId() == 7) {
               // Found Tag 7, record its information
-              targetYaw.add(target.getYaw());
+              targetYaw.add(target.getYaw() + 
+                  offset[robotCameras.indexOf(myCamera)]);
       
               targetVisible = true;
             }
@@ -101,8 +102,23 @@ public class PhotonVision {
     double avgTargetYaw = calculateAvg(targetYaw);
 
     if (targetVisible) {
-      turn = -1.0 * avgTargetYaw * turnModifier;
-      drive.arcadeDrive(0, turn);
+      if (Math.abs(avgTargetYaw) > 5.0) {
+        if (avgTargetYaw > 0) {
+          drive.arcadeDrive(0, 1);
+        } else {
+          drive.arcadeDrive(0, -1);
+        }
+      }
+      else if (Math.abs(avgTargetYaw) < 5.0) {
+        if (avgTargetYaw > 0) {
+          drive.arcadeDrive(0, 0.5);
+        } else {
+          drive.arcadeDrive(0, -0.5);
+        }
+      } 
+    }
+    else {
+      System.out.println("Target not visible");
     }
 
     if (Math.round(avgTargetYaw) != 0) {
