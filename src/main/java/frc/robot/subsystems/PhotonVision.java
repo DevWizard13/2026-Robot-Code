@@ -16,6 +16,7 @@ public class PhotonVision {
   DriveSubsystem drive = new DriveSubsystem();
   double turnModifier = 0.01;
   float[] offset = Constants.vision.cameraoffset;
+  float maxDistance = 10;
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     robotCameras = cameras;
@@ -58,7 +59,7 @@ public class PhotonVision {
     Optional<EstimatedRobotPose> robotPose = getPose(Constants.vision.localizationCameraName[0]);
     if (robotPose.isEmpty()) {
       System.out.println("ERROR: cannot determine pose");
-      return 0f;
+      return (float)Double.POSITIVE_INFINITY;
     }
     else {
       Pose2d myPose = robotPose.get().estimatedPose.toPose2d();
@@ -97,6 +98,11 @@ public class PhotonVision {
           }
         }
       }
+    }
+
+    if (getDistanceToTag() > maxDistance) {
+      drive.arcadeDrive(1, 0);
+      return false;
     }
 
     double avgTargetYaw = calculateAvg(targetYaw);

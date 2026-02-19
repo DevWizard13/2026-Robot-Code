@@ -132,6 +132,8 @@ public final class Constants {
      // TODO: add real code for each Transform3d -- actually nvm it won't be used
      
      public static final float[] cameraoffset = {10, -10};
+
+     public static final float maxDistanceToTarget = 10;
    }
 
 
