@@ -16,7 +16,7 @@ public class PhotonVision {
   DriveSubsystem drive = new DriveSubsystem();
   double turnModifier = 0.01;
   float[] offset = Constants.vision.cameraoffset;
-  float maxDistance = 10;
+  float maxDistance = Constants.vision.maxDistanceToTarget;
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
     robotCameras = cameras;
@@ -100,11 +100,6 @@ public class PhotonVision {
       }
     }
 
-    if (getDistanceToTag() > maxDistance) {
-      drive.arcadeDrive(1, 0);
-      return false;
-    }
-
     double avgTargetYaw = calculateAvg(targetYaw);
 
     if (targetVisible) {
@@ -125,6 +120,11 @@ public class PhotonVision {
     }
     else {
       System.out.println("Target not visible");
+    }
+
+    if (getDistanceToTag() > maxDistance) {
+      drive.arcadeDrive(1, 0);
+      return false;
     }
 
     if (Math.round(avgTargetYaw) != 0) {
