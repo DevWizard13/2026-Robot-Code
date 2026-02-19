@@ -73,6 +73,7 @@ public class PhotonVision {
     PhotonCamera camera = robotCameras.get(0);
     boolean targetVisible = false;
     double turn = 0.0;
+    double speed = 0.0;
     List<Double> targetYaw = new ArrayList<>();
     // I'll replace it with the camera at the front
 
@@ -105,16 +106,16 @@ public class PhotonVision {
     if (targetVisible) {
       if (Math.abs(avgTargetYaw) > 5.0) {
         if (avgTargetYaw > 0) {
-          drive.arcadeDrive(0, 1);
+          turn = -1.0;
         } else {
-          drive.arcadeDrive(0, -1);
+          turn = 1.0;
         }
       }
       else if (Math.abs(avgTargetYaw) < 5.0) {
         if (avgTargetYaw > 0) {
-          drive.arcadeDrive(0, 0.5);
+          turn = -0.5;
         } else {
-          drive.arcadeDrive(0, -0.5);
+          turn = 0.5;
         }
       } 
     }
@@ -123,9 +124,12 @@ public class PhotonVision {
     }
 
     if (getDistanceToTag() > maxDistance) {
-      drive.arcadeDrive(1, 0);
+      speed = 1.0;
+      drive.arcadeDrive(speed, turn);
       return false;
     }
+
+    drive.arcadeDrive(speed, turn);
 
     if (Math.round(avgTargetYaw) != 0) {
       return true;
