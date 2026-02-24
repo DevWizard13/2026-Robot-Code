@@ -69,11 +69,49 @@ public class PhotonVision {
   }
 
   public double getRotToTarget() {
-    Pose2d pos = getPose(Constants.vision.localizationCameraName[0]).get().estimatedPose.toPose2d();
+    List<Pose2d> pos = new ArrayList();
+    double x = 0.0;
+    double y = 0.0;
+
+    for (String name: Constants.vision.localizationCameraName) {
+      Optional<EstimatedRobotPose> visionEst = getPose(name);
+
+	    if (visionEst.isPresent()) {
+	    	pos.add(visionEst.get().estimatedPose.toPose2d());
+	    }
+    }
+    for (Pose2d location : pos) {
+      x += location.getX();
+      y += location.getY();
+
+      x /= pos.size();
+      y /= pos.size();
+    }
+
+    return Math.atan(x/y);
   }
 
   public double getDriveToTarget() {
-    return 0.0;
+    List<Pose2d> pos = new ArrayList();
+    double x = 0.0;
+    double y = 0.0;
+
+    for (String name: Constants.vision.localizationCameraName) {
+      Optional<EstimatedRobotPose> visionEst = getPose(name);
+
+	    if (visionEst.isPresent()) {
+	    	pos.add(visionEst.get().estimatedPose.toPose2d());
+	    }
+    }
+    for (Pose2d location : pos) {
+      x += location.getX();
+      y += location.getY();
+      
+      x /= pos.size();
+      y /= pos.size();
+    }
+
+    return Math.sqrt((x * x) + (y * y));
   }
 }
 
