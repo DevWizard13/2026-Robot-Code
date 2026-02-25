@@ -1,5 +1,4 @@
 package frc.robot.subsystems;
-import java.util.Optional;
 
 import java.util.*;
 
@@ -16,7 +15,6 @@ public class PhotonVision {
   Pose2d targetPose = new Pose2d();
   DriveSubsystem drive = new DriveSubsystem();
   double turnModifier = 0.01;
-  float[] offset = Constants.vision.cameraoffset;
   float maxDistance = Constants.vision.maxDistanceToTarget;
 
 	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
@@ -69,7 +67,7 @@ public class PhotonVision {
   }
 
   public double getRotToTarget() {
-    List<Pose2d> pos = new ArrayList();
+    List<Pose2d> pos = new ArrayList<Pose2d>();
     double x = 0.0;
     double y = 0.0;
 
@@ -81,8 +79,8 @@ public class PhotonVision {
 	    }
     }
     for (Pose2d location : pos) {
-      x += location.getX();
-      y += location.getY();
+      x += location.getX() - targetPose.getX();
+      y += location.getY() - targetPose.getX();
 
       x /= pos.size();
       y /= pos.size();
@@ -92,7 +90,7 @@ public class PhotonVision {
   }
 
   public double getDriveToTarget() {
-    List<Pose2d> pos = new ArrayList();
+    List<Pose2d> pos = new ArrayList<Pose2d>();
     double x = 0.0;
     double y = 0.0;
 
@@ -104,8 +102,8 @@ public class PhotonVision {
 	    }
     }
     for (Pose2d location : pos) {
-      x += location.getX();
-      y += location.getY();
+      x += location.getX() - targetPose.getX();
+      y += location.getY() - targetPose.getX();
       
       x /= pos.size();
       y /= pos.size();

@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 // Credit to Kye for all this, I just ctrl c'd and v'd it
 // I don't have the patience to manually resolve dependancies lol
 
+import edu.wpi.first.math.geometry.*;
+
 import java.lang.annotation.Target;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -70,78 +72,74 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public final class Constants {
 
-    public static class SpeedChange {
-        public static final double stickDeadband = 0.07;
-        public static final double maxBoostSpeed = 1.00;
-        public static final double maxNormalSpeed = 0.70;
-        public static final double ShooterTargetSpeed = 3427.0; // Target speed in RPM for the shooter
-    }
+  public static class SpeedChange {
+      public static final double stickDeadband = 0.07;
+      public static final double maxBoostSpeed = 1.00;
+      public static final double maxNormalSpeed = 0.70;
+      public static final double ShooterTargetSpeed = 3427.0; // Target speed in RPM for the shooter
+  }
 
-    public static final class DrivePorts {
-        // Drive Motor Ports
-        public static final int LEFT_MASTER = 4;
-        public static final int LEFT_FOLLOWER = 6;
-        public static final int RIGHT_MASTER = 3;
-        public static final int RIGHT_FOLLOWER = 5;
+  public static final class DrivePorts {
+      // Drive Motor Ports
+      public static final int LEFT_MASTER = 4;
+      public static final int LEFT_FOLLOWER = 6;
+      public static final int RIGHT_MASTER = 3;
+      public static final int RIGHT_FOLLOWER = 5;
 
-    }
+  }
 
-    public static final class SubsystemPorts {
-        // CAN Ports
-        // Shooter Ports
-        public static final int Shooter1Port = 7;
-        public static final int Shooter2Port = 0;
-        // Climber Port
-        public static final int ClimberPort = 9;
-        // Intake Port
-        public static final int IntakePort = 12;
-        // Agitator Port
-        public static final int AgitatorPort = 15;
-    }
+  public static final class SubsystemPorts {
+      // CAN Ports
+      // Shooter Ports
+      public static final int Shooter1Port = 7;
+      public static final int Shooter2Port = 0;
+      // Climber Port
+      public static final int ClimberPort = 9;
+      // Intake Port
+      public static final int IntakePort = 12;
+      // Agitator Port
+      public static final int AgitatorPort = 15;
+  }
 
-    public static final class MotorSpeeds {
-        public static final double MaxShooterSpeedOut = 0.55;// Shooter = 55%
-        public static final double MaxShooterSpeedIn = -0.24; // Shooter = 8%
-        public static final double MaxIntakeSpeed = 0.20; // IntakeSpeed = 40%
-        public static final double MaxAgitatorSpeed = 0.30; // Agitator Speed = 30%
-        public static final double ClimberSpeed = 0.10; // Climber Speed = 10%
-    }
+  public static final class MotorSpeeds {
+      public static final double MaxShooterSpeedOut = 0.55;// Shooter = 55%
+      public static final double MaxShooterSpeedIn = -0.24; // Shooter = 8%
+      public static final double MaxIntakeSpeed = 0.20; // IntakeSpeed = 40%
+      public static final double MaxAgitatorSpeed = 0.30; // Agitator Speed = 30%
+      public static final double ClimberSpeed = 0.10; // Climber Speed = 10%
+  }
 
-    // Joysticks and Buttons
-    public static final class Controls {
-        // Driver Joystick and Buttons
-        public static final class Driver {
-            public static final int kJoystickID = 0;
-        }
+  // Joysticks and Buttons
+  public static final class Controls {
+      // Driver Joystick and Buttons
+      public static final class Driver {
+          public static final int kJoystickID = 0;
+      }
 
-        // Operator Joystick and Buttons
-        public static final class Operator {
-            public static final int kJoystickID = 1;
-        }
-    }
+      // Operator Joystick and Buttons
+      public static final class Operator {
+          public static final int kJoystickID = 1;
+      }
+  }
 
+  public static final class vision {
+    public static final AprilTagFieldLayout kTagLayout =
+                        AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-   public static final class vision {
-     public static final AprilTagFieldLayout kTagLayout =
-                         AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    public static final String[] localizationCameraName = {"dc1", "dc2", "dc3", "sc"};
+    // Update the number of cameras later, dc stands for "drive camera" and sc
+    // for "shooter camera"
+    public static final Transform3d[] localizationCameraToRobot = new Transform3d[4];
+    // TODO: add real code for each Transform3d -- actually nvm it won't be used
+    
+    public static final float maxDistanceToTarget = 10;
 
-     public static final String[] localizationCameraName = {"dc1", "dc2", "dc3", "sc"};
-     // Update the number of cameras later, dc stands for "drive camera" and sc
-     // for "shooter camera"
-     public static final Transform3d[] localizationCameraToRobot = new Transform3d[4];
-     // TODO: add real code for each Transform3d -- actually nvm it won't be used
-     
-     public static final float[] cameraoffset = {10, -10};
+    public static final Pose2d targetPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
+  }
 
-     public static final float maxDistanceToTarget = 10;
-   }
-
-
-    public static final class ClimberConstants {
-        public static final double ClimbUpSpeed = 0.2;
-        public static final double ClimbDownSpeed = -0.2;
-        public static final double ClimbTarget = 52; // Default target is 52 rotations
-    }
-
-
+  public static final class ClimberConstants {
+      public static final double ClimbUpSpeed = 0.2;
+      public static final double ClimbDownSpeed = -0.2;
+      public static final double ClimbTarget = 52; // Default target is 52 rotations
+  }
 }
