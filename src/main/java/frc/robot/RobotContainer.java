@@ -57,7 +57,7 @@ public class RobotContainer {
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final PhotonVision m_photonVision = new
-  PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
+  PhotonVision(Arrays.asList(new PhotonCamera("MainCamera")),
   new Pose2d());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
