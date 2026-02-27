@@ -1,6 +1,4 @@
 package frc.robot.subsystems;
-import java.util.Optional;
-
 import java.util.*;
 
 import org.photonvision.*;
@@ -13,14 +11,21 @@ public class PhotonVision {
 	List<PhotonCamera> robotCameras;
   List<PhotonPoseEstimator> cameraEst = new ArrayList<>();
   Pose2d targetPose = new Pose2d();
-  DriveSubsystem drive = new DriveSubsystem();
+  DriveSubsystem drive = null;
   double turnModifier = 0.01;
   float[] offset = Constants.vision.cameraoffset;
   float maxDistance = Constants.vision.maxDistanceToTarget;
 
-	public PhotonVision (List<PhotonCamera> cameras, Pose2d target) {
-    robotCameras = cameras;
+	public PhotonVision (Pose2d target, DriveSubsystem driver) {
+    robotCameras = new ArrayList<PhotonCamera>();
+    System.out.println("I have no idea what tf wrong so I'm resorting to println");
+    for (String camera : Constants.vision.localizationCameraName) {
+      System.out.println("We're about to print " + camera + "!");
+      robotCameras.add(new PhotonCamera(camera));
+      System.out.println("Sucesfully added. This is unlikely to run.");
+    }
     targetPose = target;
+    drive = driver;
 
     // Make a list of PhotonPoseEstimators
     for (int i = 0; i < robotCameras.size(); i++) {
@@ -31,7 +36,6 @@ public class PhotonVision {
     	cameraEst.get(i).setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 	}
-
 	public Optional<EstimatedRobotPose> getPose(String cameraName) {
 		// check to see which camera matches the desired name, and when it's found,
 		// return the pose
@@ -70,7 +74,6 @@ public class PhotonVision {
   public boolean aimAtTarget() {
     // I made it a bool so you can identify if it's corrrectly aimed
 
-    PhotonCamera camera = robotCameras.get(0);
     boolean targetVisible = false;
     double turn = 0.0;
     double speed = 0.0;
