@@ -67,8 +67,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
    
   final double speedModifier = 0.25;
-  //PhotonVision camera = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
-  //new Pose2d());
+  /* 
+  PhotonVision camera = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
+  new Pose2d()); */
 
   /**
    * Example command factory method.
@@ -139,9 +140,4 @@ SmartDashboard.putNumber("Shooter RPM", ShooterEncoder.getVelocity());
       }
     });
   }
-
-
-
-
-
 }
