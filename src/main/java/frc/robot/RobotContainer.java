@@ -74,10 +74,10 @@ public class RobotContainer {
     registerNamedCommands();
     configureBindings();
     // drive command
-   // if (!remoteOperated) {
-      m_driveSubsystem.setDefaultCommand(
-        new RunCommand(
+       m_driveSubsystem.setDefaultCommand(
+         new RunCommand(
           () -> {
+            if (remoteOperated) {
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
@@ -88,9 +88,9 @@ public class RobotContainer {
                 double right = applyDeadbandAndScale(m_driverController.getRightY());
                 m_driveSubsystem.tankDrive(left, right);
               }
-            },
+            }
+          },
           m_driveSubsystem));
-   // }
 
     // Toggle drive mode -- false = tank, true = arcade
   //  m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
@@ -107,13 +107,6 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
         // Speed Boost OFF
         .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
-
-
-    // // Testing to see if the camera returns anything
-    // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
-    // m_photonVision.getPose("Arducam OV9782 USB Camera")));
-    // .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
-    // .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
   }
 
   private double applyDeadbandAndScale(double value) {
@@ -173,6 +166,23 @@ public class RobotContainer {
         //driveDisabled = false;
         m_ShooterSubsystem.StopShoot();
       }));*/
+    
+    m_driverController.rightBumper()
+      .onTrue(new RunCommand(() -> {
+       boolean isAimed = m_photonVision.aimAtTarget();
+       driveDisabled = true;
+        if (isAimed) {
+          m_ShooterSubsystem.StartShoot();
+          return;
+        }
+        if (!driveDisabled) {
+          return;
+        }
+      }))
+      .onFalse(new InstantCommand(() -> {
+        driveDisabled = false;
+        m_ShooterSubsystem.StopShoot();
+      }));
 
     // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
