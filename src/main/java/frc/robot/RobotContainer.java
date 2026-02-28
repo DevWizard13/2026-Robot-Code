@@ -169,12 +169,44 @@ public class RobotContainer {
     
     m_driverController.rightBumper()
       .onTrue(new RunCommand(() -> {
-       driveDisabled = true;
-        if (isAimed) {
-          m_ShooterSubsystem.StartShoot();
-          return;
+        if (m_photonVision.canSeeTags()) {
+          driveDisabled = true;
+          double totalRot = m_photonVision.getRotToTarget();
+          double rot = 0;
+          double totalFwd = m_photonVision.getDriveToTarget();
+          double fwd = 0;
+          boolean isAimed = false;
+          if (totalRot > 5) {
+            rot = -1;
+          } else if (totalRot < -5) {
+            rot = 1;
+          }
+          else if (totalRot > 1) {
+            rot = -0.5;
+          }
+          else if (totalRot < -1) {
+            rot = 0.5;
+          }
+          else {
+            m_ShooterSubsystem.StartShoot();
+            return;
+          }
+          if (!driveDisabled) {
+            return;
+          }
+          else {
+            m_ShooterSubsystem.StartShoot();
+          }
+
+          if (totalFwd > 5) {
+            fwd = 1;
+          }
+
+          m_driveSubsystem.arcadeDrive(rot, fwd);
         }
-        if (!driveDisabled) {
+        else {
+          System.out.println("WARNING: can't see tags");
+          driveDisabled = false;
           return;
         }
       }))
