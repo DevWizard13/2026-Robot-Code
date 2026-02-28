@@ -110,7 +110,7 @@ SmartDashboard.putNumber("Shooter RPM", ShooterEncoder.getVelocity());
 
      // m_pidController.setReference(3500, SparkMax.ControlType.kVelocity);
       Shooter2Motor.set(0.76);
-      Shooter1Motor.set(0.7);
+      Shooter1Motor.set(0.85);
     });
   }
 

@@ -91,16 +91,9 @@ public class DriveSubsystem extends SubsystemBase {
 
 
        
-        RobotConfig config;
         try {
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            e.printStackTrace();
-            config = new RobotConfig(0, 0, null, 0);
-
-
-       
-        AutoBuilder.configure(
+            RobotConfig config = RobotConfig.fromGUISettings();
+                     AutoBuilder.configure(
             this::getPose,
             this::resetPose,
             this::getRobotRelativeSpeeds,
@@ -116,6 +109,13 @@ public class DriveSubsystem extends SubsystemBase {
             },
             this
         );
+        } catch (Exception e) {
+            e.printStackTrace();
+            //RobotConfig config = new RobotConfig(55, 4.6, null, 0.66);
+
+        
+       
+
     }
 }
 
@@ -123,14 +123,14 @@ public class DriveSubsystem extends SubsystemBase {
    
    
     public void arcadeDrive(double fwd, double rot) {
-        if (Math.abs(fwd) > 0.05 && Math.abs(rot) < 0.05) {
-           double correction = leftEncoder.getVelocity() - rightEncoder.getVelocity() * 0.00001;
-            drive.arcadeDrive(fwd, -correction);
-            return;
-        } else {
+    // if (Math.abs(fwd) > 0.05 && Math.abs(rot) < 0.05) {
+    //     //    double correction = leftEncoder.getVelocity() - rightEncoder.getVelocity() * 0.00001;
+    //     //     drive.arcadeDrive(fwd, -correction);
+    //     //     return;
+    //      } else {
         // Normal arcade drive
         drive.arcadeDrive(fwd, rot);
-        }
+      //  }
     }
 
 
