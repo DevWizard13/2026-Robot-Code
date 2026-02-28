@@ -62,6 +62,13 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+  double totalRot = 0;
+  double photonRot = 0;
+  double totalFwd = 0;
+  double photonFwd = 0;
+  boolean isAimed = false;
+  boolean remoteOperated = true;
+
   // Drive mode: false = tank, true = arcade (Default)
 
   /**
@@ -88,6 +95,35 @@ public class RobotContainer {
                 double right = applyDeadbandAndScale(m_driverController.getRightY());
                 m_driveSubsystem.tankDrive(left, right);
               }
+            }
+            else {
+              if (totalRot > 5) {
+                photonRot = -1;
+              } else if (totalRot < -5) {
+                photonRot = 1;
+              }
+              else if (totalRot > 1) {
+                photonRot = -0.5;
+              }
+              else if (totalRot < -1) {
+                photonRot = 0.5;
+              }
+              else {
+                m_ShooterSubsystem.StartShoot();
+                return;
+              }
+              if (!driveDisabled) {
+                return;
+              }
+              else {
+                m_ShooterSubsystem.StartShoot();
+              }
+              
+              if (totalFwd > 5) {
+                photonFwd = 1;
+              }
+              
+              m_driveSubsystem.arcadeDrive(photonRot, photonFwd);
             }
           },
           m_driveSubsystem));
@@ -144,69 +180,14 @@ public class RobotContainer {
         .onFalse(m_ShooterSubsystem.StopShoot());
 
 
-      //Reverse Shooter
-    //m_driverController.rightBumper()
-    //    .onTrue(m_ShooterSubsystem.ReverseShoot())
-    //    .onFalse(m_ShooterSubsystem.StopShoot());
-    // We're gonna have to find a new button for one of the two
-
-    /*m_driverController.rightBumper()
-      .onTrue(new RunCommand(() -> {
-       // boolean isAimed = m_photonVision.aimAtTarget();
-       // driveDisabled = true;
-        if (isAimed) {
-          m_ShooterSubsystem.StartShoot();
-          return;
-        }
-        if (!driveDisabled) {
-          return;
-        }
-      }))
-      .onFalse(new InstantCommand(() -> {
-        //driveDisabled = false;
-        m_ShooterSubsystem.StopShoot();
-      }));*/
-    
     m_driverController.rightBumper()
-      .onTrue(new RunCommand(() -> {
+      .onTrue(new InstantCommand(() -> {
         if (m_photonVision.canSeeTags()) {
-          driveDisabled = true;
-          double totalRot = m_photonVision.getRotToTarget();
-          double rot = 0;
-          double totalFwd = m_photonVision.getDriveToTarget();
-          double fwd = 0;
-          boolean isAimed = false;
-          if (totalRot > 5) {
-            rot = -1;
-          } else if (totalRot < -5) {
-            rot = 1;
-          }
-          else if (totalRot > 1) {
-            rot = -0.5;
-          }
-          else if (totalRot < -1) {
-            rot = 0.5;
-          }
-          else {
-            m_ShooterSubsystem.StartShoot();
-            return;
-          }
-          if (!driveDisabled) {
-            return;
-          }
-          else {
-            m_ShooterSubsystem.StartShoot();
-          }
-
-          if (totalFwd > 5) {
-            fwd = 1;
-          }
-
-          m_driveSubsystem.arcadeDrive(rot, fwd);
+          remoteOperated = false;
         }
         else {
           System.out.println("WARNING: can't see tags");
-          driveDisabled = false;
+          remoteOperated = true;
           return;
         }
       }))
