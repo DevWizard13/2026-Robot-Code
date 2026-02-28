@@ -125,13 +125,15 @@ public final class Constants {
      public static final AprilTagFieldLayout kTagLayout =
                          AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-     public static final String[] localizationCameraName = {"dc1", "dc2", "dc3", "sc"};
+     public static final String[] localizationCameraName = {"MainCamera"};
      // Update the number of cameras later, dc stands for "drive camera" and sc
      // for "shooter camera"
      public static final Transform3d[] localizationCameraToRobot = new Transform3d[4];
      // TODO: add real code for each Transform3d -- actually nvm it won't be used
      
      public static final float[] cameraoffset = {10, -10};
+
+     public static final float maxDistanceToTarget = 10;
    }
 
 

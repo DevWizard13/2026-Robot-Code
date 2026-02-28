@@ -56,9 +56,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final PhotonVision m_photonVision = new
-  PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
-  new Pose2d());
+  private final PhotonVision m_photonVision = new PhotonVision(new Pose2d(), m_driveSubsystem);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
@@ -160,7 +158,7 @@ public class RobotContainer {
     //    .onFalse(m_ShooterSubsystem.StopShoot());
     // We're gonna have to find a new button for one of the two
 
-    m_driverController.rightBumper()
+    /*m_driverController.rightBumper()
       .onTrue(new RunCommand(() -> {
         boolean isAimed = m_photonVision.aimAtTarget();
         driveDisabled = true;
@@ -175,7 +173,7 @@ public class RobotContainer {
       .onFalse(new InstantCommand(() -> {
         driveDisabled = false;
         m_ShooterSubsystem.StopShoot();
-      }));
+      }));*/
 
     // Testing to see if the camera returns anything
     // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->

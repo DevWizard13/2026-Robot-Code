@@ -39,8 +39,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
   
   final double speedModifier = 0.25;
+  /* 
   PhotonVision camera = new PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
-  new Pose2d());
+  new Pose2d()); */
 
   /**
    * Example command factory method.
