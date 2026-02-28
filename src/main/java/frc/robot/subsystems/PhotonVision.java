@@ -128,8 +128,8 @@ public class PhotonVision {
     return x;
   }
 
-  public bool canSeeTags() {
-    bool tagVisible = false;
+  public boolean canSeeTags() {
+    boolean tagVisible = false;
 
     for (String name: Constants.vision.localizationCameraName) {
       Optional<EstimatedRobotPose> visionEst = getPose(name);
@@ -138,5 +138,7 @@ public class PhotonVision {
 	    	tagVisible = true;
 	    }
     }
+
+    return tagVisible;
   }
 }
