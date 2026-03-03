@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -12,10 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-
-
-
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
@@ -23,12 +20,15 @@ import com.pathplanner.lib.controllers.PPLTVController;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.*;
+
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.Pigeon2; // Use PigeonIMU for older version
 
 public class DriveSubsystem extends SubsystemBase {
 
 
-    
+    private final Pigeon2 pigeon = new Pigeon2(1, "rio");
    
     private SparkMax leftMaster = new SparkMax(
         Constants.DrivePorts.LEFT_MASTER, MotorType.kBrushless);
@@ -46,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
 
      // Tuning constant for correction
     private static final double kP = 0.05; // Proportional gain
-
+    double wheelCircumference = Math.PI * 0.2032; // 8 inch diameter in meters
 
 
     private final MotorControllerGroup leftGroup =
@@ -79,12 +79,11 @@ public class DriveSubsystem extends SubsystemBase {
 
 
 
+      pigeon.setYaw(0.0);
+  
 
 
-
-
-
-
+        
 
 
         drive.setSafetyEnabled(true);
@@ -159,9 +158,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
        
-        return new ChassisSpeeds(0, 0, 0);
+        Double yaw = pigeon.getYaw().getValueAsDouble();
+        double yawRateRadPerSec = Math.toRadians(yaw);
+        double averageSpeed = ((leftEncoder.getVelocity() + rightEncoder.getVelocity()) / 2.0) * (wheelCircumference / 8.45 / 60.0) ;
+        DifferentialDriveWheelSpeeds speeds = new DifferentialDriveWheelSpeeds(leftEncoder.getVelocity(), rightEncoder.getVelocity());
+        return new ChassisSpeeds(averageSpeed, 0, yawRateRadPerSec);
+        //Vy is 0 because we are only doing differential drive, so we can't move sideways. Vx is the speed of our drive train, omega is the rate of rotation from the gyro.
     }
-
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
         drive.arcadeDrive(
@@ -173,6 +176,16 @@ public class DriveSubsystem extends SubsystemBase {
 
 
 
+    public Command resetPigeon() {
+         return this.run(() -> {
+      
+               pigeon.setYaw(0.0);
+        System.out.println("Pigeon initialized and yaw reset.");
+    });
+
+    }
+
+  
 
 
     @Override
@@ -193,7 +206,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Drive Overheating", isHot);
 
 
-
+        SmartDashboard.putNumber("Pigeon Yaw", pigeon.getYaw().getValueAsDouble());
 
 
 
