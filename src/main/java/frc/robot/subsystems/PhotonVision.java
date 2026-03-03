@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.MathUtil;
 
 // PhotonVision imports
@@ -41,14 +41,11 @@ public class PhotonVision extends SubsystemBase {
   
   private PhotonCamera camera;
     private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-  
-  PIDController turnPID = new PIDController(0.05, 0, 0);
-  PIDController drivePID = new PIDController(0.5, 0, 0);
 
   
-  
+      
     public static final Pose2d HubPoseBlue = new Pose2d(
-4.625594,
+4.625594, //4.625594
 4.034536,
     new Rotation2d(0.0)
     );
@@ -57,10 +54,10 @@ public class PhotonVision extends SubsystemBase {
 
 
     Transform3d cameraToRobot = new Transform3d(
-            0.2,  // forward from robot center cm
-            0.0,  // left/right camera is centered cm
-            0.5,  // up from floor cm
-            new edu.wpi.first.math.geometry.Rotation3d(0, 0, 0)
+            -0.1016,  // forward from robot center 
+            0.0,  // left/right camera is centered 
+            0.5588,  // up from floor 
+            new edu.wpi.first.math.geometry.Rotation3d(0, 0, 180)
     );
 
 
@@ -75,9 +72,8 @@ public class PhotonVision extends SubsystemBase {
     this.m_ShooterSubsystem = shooter;
 
     camera = new PhotonCamera("MainCamera");
-    // Set tolerances (angles in radians)
-    turnPID.setTolerance(Math.toRadians(1.5));
-    drivePID.setTolerance(0.1);
+
+
   }
 
   /**
@@ -130,26 +126,34 @@ public class PhotonVision extends SubsystemBase {
           System.out.println("Distance to Target: " + distanceToTarget);
          //Rotation
          Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), HubPoseBlue);
-          System.out.println("Target Yaw (deg): " + targetYaw.getDegrees());
-          System.out.println("Target Yaw (rad): " + targetYaw.getRadians());
 
-          // Use radians for PID
-          double rotationSpeed = turnPID.calculate(targetYaw.getRadians(), 0);
-          double driveSpeed = drivePID.calculate(distanceToTarget, 1.0);
+         System.out.println("Distance: " + distanceToTarget + " Target Yaw: " + targetYaw.getDegrees());
 
-          // Clamp outputs to safe ranges
-          double maxDrive = Constants.SpeedChange.maxNormalSpeed;
-          double maxRot = 0.8; // adjust/tune as needed
-          driveSpeed = MathUtil.clamp(driveSpeed, -maxDrive, maxDrive);
-          rotationSpeed = MathUtil.clamp(rotationSpeed, -maxRot, maxRot);
+         if (targetYaw.getDegrees() > 2) {
+                   m_driveSubsystem.arcadeDrive(0, -0.4);
+        
+        } else if (targetYaw.getDegrees() < -2) {
+                   m_driveSubsystem.arcadeDrive(0, 0.4);
+         } else {
 
-          m_driveSubsystem.arcadeDrive(driveSpeed, rotationSpeed);
+            if (Math.abs(distanceToTarget) > 3) { 
+                   m_driveSubsystem.arcadeDrive(0.4, 0);
+        } else if (Math.abs(distanceToTarget) < 2.75) {  
+                   m_driveSubsystem.arcadeDrive(-0.4, 0);
 
-          if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
-            m_ShooterSubsystem.StartShoot();
-          } else {
-            m_ShooterSubsystem.StopShoot();
-          }
+        } else {
+                    m_driveSubsystem.arcadeDrive(0, 0);
+                    m_ShooterSubsystem.StartShoot();
+        }
+      }
+
+
+          
+
+
+
+
+       
       }} else {
         m_driveSubsystem.arcadeDrive(0, 0);
       }

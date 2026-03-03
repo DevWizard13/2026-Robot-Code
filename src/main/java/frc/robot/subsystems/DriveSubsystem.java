@@ -23,12 +23,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.*;
 
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.hardware.Pigeon2; // Use PigeonIMU for older version
+import com.ctre.phoenix6.hardware.Pigeon2; //Gyro
 
 public class DriveSubsystem extends SubsystemBase {
 
 
-    private final Pigeon2 pigeon = new Pigeon2(1, "rio");
+    private final Pigeon2 pigeon = new Pigeon2(17);
    
     private SparkMax leftMaster = new SparkMax(
         Constants.DrivePorts.LEFT_MASTER, MotorType.kBrushless);
