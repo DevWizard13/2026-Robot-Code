@@ -11,30 +11,20 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.DriveSubsystem;
 //import frc.robot.subsystems.ExampleSubsystem;
 //import frc.robot.subsystems.PhotonVision;
-import java.util.*;
-import org.photonvision.PhotonCamera;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.AgitatorSubsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -50,16 +40,13 @@ public class RobotContainer {
   // Max speed variable for drive scaling
   double speed = SpeedChange.maxNormalSpeed;
   public boolean m_arcade = true;
-  boolean driveDisabled = false;
 
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
- // private final PhotonVision m_photonVision = new
-//  PhotonVision(Arrays.asList(new PhotonCamera("Arducam OV9782 USB Camera")),
- // new Pose2d());
+  private final PhotonVision m_photonVision = new PhotonVision(m_driveSubsystem, m_ShooterSubsystem);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
@@ -75,7 +62,7 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
-    boolean remoteOperated = true;
+
 
     // Configure the trigger bindings
     registerNamedCommands();
@@ -89,7 +76,8 @@ public class RobotContainer {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
                
-                m_driveSubsystem.arcadeDrive(rot, fwd);
+                // arcadeDrive expects (fwd, rot)
+                m_driveSubsystem.arcadeDrive(fwd, rot);
               } else {
                 double left = applyDeadbandAndScale(-m_driverController.getLeftY());
                 double right = applyDeadbandAndScale(m_driverController.getRightY());
@@ -148,49 +136,19 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver Controls
     // Shooter control
+    m_driverController.rightBumper()
+        .whileTrue(m_photonVision.AimShoot());
 
     // Start Shooter (constant speed)
     m_driverController.rightTrigger()
         .onTrue(m_ShooterSubsystem.StartShoot())
         .onFalse(m_ShooterSubsystem.StopShoot());
 
-
-      //Reverse Shooter
-    //m_driverController.rightBumper()
-    //    .onTrue(m_ShooterSubsystem.ReverseShoot())
-    //    .onFalse(m_ShooterSubsystem.StopShoot());
-    // We're gonna have to find a new button for one of the two
-
-   /*  m_driverController.rightBumper()
-      .onTrue(new RunCommand(() -> {
-       // boolean isAimed = m_photonVision.aimAtTarget();
-       // driveDisabled = true;
-        if (isAimed) {
-          m_ShooterSubsystem.StartShoot();
-          return;
-        }
-        if (!driveDisabled) {
-          return;
-        }
-      }))
-      .onFalse(new InstantCommand(() -> {
-        //driveDisabled = false;
-        m_ShooterSubsystem.StopShoot();
-      }));
-*/
-    // Testing to see if the camera returns anything
-    // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
-    // m_photonVision.getPose("Arducam OV9782 USB Camera")));
-    // Opertor Controls
     // Climber control
-      
-  
       m_operatorController.a()
-      .onTrue(
-          m_ClimberSubsystem.OverDown())
+      .onTrue(m_ClimberSubsystem.OverDown())
       
-      .onFalse(
-        m_ClimberSubsystem.StopClimb());
+      .onFalse(m_ClimberSubsystem.StopClimb());
       
   
 

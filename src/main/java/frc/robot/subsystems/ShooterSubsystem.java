@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.*;
-import org.photonvision.*;
 import edu.wpi.first.math.geometry.*;
 
 // For CAN
