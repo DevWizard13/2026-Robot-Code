@@ -133,9 +133,11 @@ public class PhotonVision {
 
     for (String name: Constants.vision.localizationCameraName) {
       Optional<EstimatedRobotPose> visionEst = getPose(name);
+      System.out.println("Identifying if " + name + "can see targets");
 
 	    if (visionEst.isPresent()) {
 	    	tagVisible = true;
+        System.out.println("SUCCESS: Target found!");
 	    }
     }
 

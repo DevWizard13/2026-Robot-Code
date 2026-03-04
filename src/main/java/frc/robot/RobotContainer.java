@@ -49,7 +49,6 @@ public class RobotContainer {
   // Max speed variable for drive scaling
   double speed = SpeedChange.maxNormalSpeed;
   public boolean m_arcade = true;
-  boolean driveDisabled = false;
 
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
@@ -63,6 +62,7 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
   private final SendableChooser<Command> autoChooser;
 
+  // PhotonVision stuff, dw about it and DON'T mess with it without understanding what it does
   double totalRot = 0;
   double photonRot = 0;
   double totalFwd = 0;
@@ -80,6 +80,8 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
 
     boolean remoteOperated = true;
+    // please note that remoteOperated is **reserved for photonvision stuff**,
+    // use a different variable for other stuff
 
     // Configure the trigger bindings
     registerNamedCommands();
@@ -99,35 +101,8 @@ public class RobotContainer {
                 double right = applyDeadbandAndScale(m_driverController.getRightY());
                 m_driveSubsystem.tankDrive(left, right);
               }
-            }
-            else {
-              if (totalRot > 5) {
-                photonRot = -1;
-              } else if (totalRot < -5) {
-                photonRot = 1;
-              }
-              else if (totalRot > 1) {
-                photonRot = -0.5;
-              }
-              else if (totalRot < -1) {
-                photonRot = 0.5;
-              }
-              else {
-                m_ShooterSubsystem.StartShoot();
-                return;
-              }
-              if (!driveDisabled) {
-                return;
-              }
-              else {
-                m_ShooterSubsystem.StartShoot();
-              }
-              
-              if (totalFwd > 5) {
-                photonFwd = 1;
-              }
-              
-              m_driveSubsystem.arcadeDrive(photonRot, photonFwd);
+            } else {
+              photonVisionOperation();
             }
           },
           m_driveSubsystem));
@@ -156,7 +131,32 @@ public class RobotContainer {
   }
 
 
-
+  void photonVisionOperation() {
+    totalRot = m_photonVision.getRotToTarget();
+    totalFwd = m_photonVision.getDriveToTarget();
+    
+    if (totalRot > 5) {
+      photonRot = -1;
+    } else if (totalRot < -5) {
+      photonRot = 1;
+    }
+    else if (totalRot > 1) {
+      photonRot = -0.5;
+    }
+    else if (totalRot < -1) {
+      photonRot = 0.5;
+    }
+    else {
+      m_ShooterSubsystem.StartShoot();
+      photonRot = 0.0;
+    }
+    
+    if (totalFwd > 5) {
+      photonFwd = 1;
+    }
+  
+    m_driveSubsystem.arcadeDrive(photonRot, photonFwd);
+  }
 
     //Register named commands for use in PathPlanner autonomous paths
   private void registerNamedCommands() {
@@ -185,16 +185,17 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> {
         if (m_photonVision.canSeeTags()) {
           remoteOperated = false;
+          System.out.println("Saw tags, activating photonvision");
         }
         else {
           System.out.println("WARNING: can't see tags");
+          System.out.println("Deactivating photonvision");
           remoteOperated = true;
-          return;
         }
       }))
       .onFalse(new InstantCommand(() -> {
-        driveDisabled = false;
         m_ShooterSubsystem.StopShoot();
+        System.out.println("Bumper released, deactivating photonvision");
       }));
 
     // Testing to see if the camera returns anything
