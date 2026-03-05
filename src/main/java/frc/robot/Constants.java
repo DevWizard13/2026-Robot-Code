@@ -10,51 +10,9 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-// import frc.lib.util.COTSTalonFXSwerveConstants;
-//import frc.lib.util.SwerveModuleConstants;
-// Credit to Kye for all this, I just ctrl c'd and v'd it
-// I don't have the patience to manually resolve dependancies lol
-
-import java.lang.annotation.Target;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -70,41 +28,71 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public final class Constants {
 
-    public static class SpeedChange {
-        public static final double stickDeadband = 0.07;
-        public static final double maxBoostSpeed = 1.00;
-        public static final double maxNormalSpeed = 0.70;
-        public static final double ShooterTargetSpeed = 3427.0; // Target speed in RPM for the shooter
-    }
+    public static final class Subsystems {
+        public static final class Drive {
+            // Ports
+            public static final int kLEFT_MASTER = 4;
+            public static final int kLEFT_FOLLOWER = 6;
+            public static final int kRIGHT_MASTER = 3;
+            public static final int kRIGHT_FOLLOWER = 5;
+            // Speeds
+            public static final double kStickDeadband = 0.07;
+            public static final double kMaxBoostSpeed = 1.00;
+            public static final double kMaxNormalSpeed = 0.70;
+            public static final double kMaxRotSpeed = 0.5; // Only used in vision
+        }
 
-    public static final class DrivePorts {
-        // Drive Motor Ports
-        public static final int LEFT_MASTER = 4;
-        public static final int LEFT_FOLLOWER = 6;
-        public static final int RIGHT_MASTER = 3;
-        public static final int RIGHT_FOLLOWER = 5;
+        public static final class Shooter {
+            // Ports
+            public static final int kShooter1Port = 7;
+            public static final int kShooter2Port = 0;
+            // Speeds
+            public static final double kMaxShooterSpeedOut1 = 0.85;// Shooter =85%
+            public static final double kMaxShooterSpeedOut2 = 0.76;// Shooter = 76%
+            public static final double kShooterTargetSpeed1 = 3427.0; // Target speed in RPM for the shooter
+        }
 
-    }
+        public static final class Climber {
+            // Ports
+            public static final int kClimberPort = 9;
+            // Speeds
+            public static final double kClimberUpSpeed = 0.20; // Climber Up Speed = 20%
+            public static final double kClimberDownSpeed = -0.3; // Climber Down Speed = 30%
+            public static final double kClimberManualSpeed = -0.2; // Climber Manual Speed = 20%
+            // Targets
+            public static final double kClimberUpTarget = 61.3;
+            public static final double kClimberDownTarget = 1.0;
+        }
 
-    public static final class SubsystemPorts {
-        // CAN Ports
-        // Shooter Ports
-        public static final int Shooter1Port = 7;
-        public static final int Shooter2Port = 0;
-        // Climber Port
-        public static final int ClimberPort = 9;
-        // Intake Port
-        public static final int IntakePort = 12;
-        // Agitator Port
-        public static final int AgitatorPort = 15;
-    }
+        public static final class Intake {
+            // Ports
+            public static final int kIntakePort = 12;
+            // Speeds
+            public static final double kMaxIntakeSpeed = 0.20; // IntakeSpeed = 40%
+        }
 
-    public static final class MotorSpeeds {
-        public static final double MaxShooterSpeedOut = 0.55;// Shooter = 55%
-        public static final double MaxShooterSpeedIn = -0.24; // Shooter = 8%
-        public static final double MaxIntakeSpeed = 0.20; // IntakeSpeed = 40%
-        public static final double MaxAgitatorSpeed = 0.30; // Agitator Speed = 30%
-        public static final double ClimberSpeed = 0.10; // Climber Speed = 10%
+        public static final class Vision {
+            public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
+                    .loadField(AprilTagFields.kDefaultField);
+
+            public static final Pose2d kHubPoseBlue = new Pose2d(
+                    4.625594,
+                    4.034536,
+                    new Rotation2d(0.0));
+
+            public static final Transform3d kCameraToRobot = new Transform3d(
+                    -0.1016, // forward from robot center
+                    0.0, // left/right camera is centered
+                    0.5588, // up from floor
+                    new edu.wpi.first.math.geometry.Rotation3d(0, 0, 180));
+        }
+
+        public static final class Agitaor {
+            // Ports
+            public static final int kAgitatorPort = 15;
+            // Speeds
+            public static final double kMaxAgitatorSpeed = 0.30; // Agitator Speed = 30%
+        }
     }
 
     // Joysticks and Buttons
@@ -119,29 +107,5 @@ public final class Constants {
             public static final int kJoystickID = 1;
         }
     }
-
-
-   public static final class vision {
-     public static final AprilTagFieldLayout kTagLayout =
-                         AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-
-     public static final String[] localizationCameraName = {"dc1", "dc2", "dc3", "sc"};
-     // Update the number of cameras later, dc stands for "drive camera" and sc
-     // for "shooter camera"
-     public static final Transform3d[] localizationCameraToRobot = new Transform3d[4];
-     // TODO: add real code for each Transform3d -- actually nvm it won't be used
-     
-     public static final float[] cameraoffset = {10, -10};
-
-     public static final float maxDistanceToTarget = 10;
-   }
-
-
-    public static final class ClimberConstants {
-        public static final double ClimbUpSpeed = 0.2;
-        public static final double ClimbDownSpeed = -0.2;
-        public static final double ClimbTarget = 52; // Default target is 52 rotations
-    }
-
 
 }

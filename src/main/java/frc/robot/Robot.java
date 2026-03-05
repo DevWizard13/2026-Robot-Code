@@ -8,11 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
-
-
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -24,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final RobotContainer m_robotContainer;
-  
 
   // Added fields
 
@@ -38,8 +33,6 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-  
-
 
   }
 
@@ -57,18 +50,18 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-     // Get match time from DriverStation
-        double timeRemaining = DriverStation.getMatchTime();
+    // Get match time from DriverStation
+    double timeRemaining = DriverStation.getMatchTime();
 
-        // If FMS is not connected, this may return -1
-        if (timeRemaining >= 0) {
-          int minutes = (int) timeRemaining / 60;
-          int seconds = (int) timeRemaining % 60;
-            SmartDashboard.putString("Match Time", String.format("%d:%02d", minutes, seconds));
-        } else {
-            SmartDashboard.putString("Match Time", "N/A");
-        }
-   
+    // If FMS is not connected, this may return -1
+    if (timeRemaining >= 0) {
+      int minutes = (int) timeRemaining / 60;
+      int seconds = (int) timeRemaining % 60;
+      SmartDashboard.putString("Match Time", String.format("%d:%02d", minutes, seconds));
+    } else {
+      SmartDashboard.putString("Match Time", "N/A");
+    }
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -110,7 +103,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-        
+
   }
 
   /** This function is called periodically during operator control. */

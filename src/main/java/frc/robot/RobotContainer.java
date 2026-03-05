@@ -6,11 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.Controls.Driver;
 import frc.robot.Constants.Controls.Operator;
-import frc.robot.Constants.SpeedChange;
-import frc.robot.commands.Autos;
 import frc.robot.subsystems.DriveSubsystem;
-//import frc.robot.subsystems.ExampleSubsystem;
-//import frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -25,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -38,7 +33,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // Max speed variable for drive scaling
-  double speed = SpeedChange.maxNormalSpeed;
+  double speed = Constants.Subsystems.Drive.kMaxNormalSpeed;
   public boolean m_arcade = true;
 
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
@@ -62,65 +57,53 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
-
-
     // Configure the trigger bindings
     registerNamedCommands();
     configureBindings();
     // drive command
-   // if (!remoteOperated) {
-      m_driveSubsystem.setDefaultCommand(
+    // if (!remoteOperated) {
+    m_driveSubsystem.setDefaultCommand(
         new RunCommand(
-          () -> {
+            () -> {
               if (m_arcade) {
                 double rot = applyDeadbandAndScale(m_driverController.getRightX());
                 double fwd = applyDeadbandAndScale(m_driverController.getLeftY());
-               
+
                 // arcadeDrive expects (fwd, rot)
-                m_driveSubsystem.arcadeDrive(rot, fwd);
+                m_driveSubsystem.arcadeDrive(fwd, rot);
               } else {
                 double left = applyDeadbandAndScale(-m_driverController.getLeftY());
                 double right = applyDeadbandAndScale(m_driverController.getRightY());
                 m_driveSubsystem.tankDrive(left, right);
               }
             },
-          m_driveSubsystem));
-   // }
+            m_driveSubsystem));
+    // }
 
     // Toggle drive mode -- false = tank, true = arcade
-  //  m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_arcade = !m_arcade));
-  SmartDashboard.putData("Toggle Drive Mode", new InstantCommand(() -> m_arcade = !m_arcade));
+    SmartDashboard.putData("Toggle Drive Mode", new InstantCommand(() -> m_arcade = !m_arcade));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Speed boost
     m_driverController.leftTrigger()
         // Speed Boost ON
-        .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
+        .onTrue(new InstantCommand(() -> speed = Constants.Subsystems.Drive.kMaxBoostSpeed))
         // Speed Boost OFF
-        .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
+        .onFalse(new InstantCommand(() -> speed = Constants.Subsystems.Drive.kMaxNormalSpeed));
 
-
-    // // Testing to see if the camera returns anything
-    // m_driverController.rightTrigger().onTrue(new InstantCommand(() ->
-    // m_photonVision.getPose("Arducam OV9782 USB Camera")));
-    // .onTrue(new InstantCommand(() -> speed = SpeedChange.maxBoostSpeed))
-    // .onFalse(new InstantCommand(() -> speed = SpeedChange.maxNormalSpeed));
   }
 
   private double applyDeadbandAndScale(double value) {
-    if (Math.abs(value) < SpeedChange.stickDeadband) {
+    if (Math.abs(value) < Constants.Subsystems.Drive.kStickDeadband) {
       return 0.0;
     }
 
-    return Math.copySign(Math.abs(value - SpeedChange.stickDeadband) / (1.0 - SpeedChange.stickDeadband) * speed,
+    return Math.copySign(Math.abs(value - Constants.Subsystems.Drive.kStickDeadband) / (1.0 - Constants.Subsystems.Drive.kStickDeadband) * speed,
         value);
   }
 
-
-
-
-    //Register named commands for use in PathPlanner autonomous paths
+  // Register named commands for use in PathPlanner autonomous paths
   private void registerNamedCommands() {
     NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.shoot_1_Command());
     NamedCommands.registerCommand("Shooter_ON", m_ShooterSubsystem.StartShoot());
@@ -130,7 +113,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake_ON", m_IntakeSubsystem.StartIntake());
     NamedCommands.registerCommand("Intake_OFF", m_IntakeSubsystem.StopIntake());
     NamedCommands.registerCommand("Agitator_ON", m_AgitatorSubsystem.StartAgitator());
-    NamedCommands.registerCommand("Agitator_OFF", m_AgitatorSubsystem.StopAgitator());  
+    NamedCommands.registerCommand("Agitator_OFF", m_AgitatorSubsystem.StopAgitator());
   };
 
   private void configureBindings() {
@@ -145,14 +128,10 @@ public class RobotContainer {
         .onFalse(m_ShooterSubsystem.StopShoot());
 
     // Climber control
-      m_operatorController.a()
-      .onTrue(m_ClimberSubsystem.OverDown())
-      
-      .onFalse(m_ClimberSubsystem.StopClimb());
-      
-  
+    m_operatorController.a()
+        .onTrue(m_ClimberSubsystem.OverDown())
 
-
+        .onFalse(m_ClimberSubsystem.StopClimb());
 
     // Climber Up All the way
     m_operatorController.povUp()

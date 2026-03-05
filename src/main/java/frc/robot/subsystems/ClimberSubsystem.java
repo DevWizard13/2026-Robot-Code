@@ -18,19 +18,18 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private final TalonFX ClimbMotor = new TalonFX(Constants.SubsystemPorts.ClimberPort);
+  private final TalonFX ClimbMotor = new TalonFX(Constants.Subsystems.Climber.kClimberPort);
   // Duty cycle control request (percent output)
- // private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
+  // private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   double positionRotations = ClimbMotor.getPosition().getValueAsDouble();
   private final DutyCycleOut percentOutput = new DutyCycleOut(0);
- // private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
+  // private final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
 
   boolean STOP = false;
 
   public ClimberSubsystem() {
 
-
-      SmartDashboard.putData("Zero Climber", new InstantCommand(() -> ClimbMotor.setPosition(0.0)));
+    SmartDashboard.putData("Zero Climber", new InstantCommand(() -> ClimbMotor.setPosition(0.0)));
     CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
 
     // ----- SUPPLY CURRENT LIMIT -----
@@ -48,7 +47,7 @@ public class ClimberSubsystem extends SubsystemBase {
     ClimbMotor.getConfigurator().apply(currentLimits);
 
     // Make the motor brake when no power is applied
-        // ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
+    // ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
     ClimbMotor.setPosition(0.0);
     ClimbMotor.setNeutralMode(NeutralModeValue.Brake);
   }
@@ -82,17 +81,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-
-
-        // SmartDashboard.putNumber("Climber Supply Current", ClimbMotor.getSupplyCurrent().getValueAsDouble());
-        // SmartDashboard.putNumber("Climber Stator Current", ClimbMotor.getStatorCurrent().getValueAsDouble());
-        // SmartDashboard.putNumber("Climber Temp C", ClimbMotor.getDeviceTemp().getValueAsDouble());
-         SmartDashboard.putNumber("Climber Position (Rotations)", ClimbMotor.getPosition().getValueAsDouble());
-        // SmartDashboard.putNumber("Climber Supply Voltage", ClimbMotor.getSupplyVoltage().getValueAsDouble());
-        // SmartDashboard.putNumber("Climber Applied Voltage", ClimbMotor.getMotorVoltage().getValueAsDouble());
-  
-        
-
+    SmartDashboard.putNumber("Climber Position (Rotations)", ClimbMotor.getPosition().getValueAsDouble());
   }
 
   public Command StopClimb() {
@@ -101,49 +90,35 @@ public class ClimberSubsystem extends SubsystemBase {
     });
   }
 
-
-
   public Command UpClimb() {
     return this.run(() -> {
-      
-    ClimbMotor.setControl(percentOutput.withOutput(0.2));
+
+      ClimbMotor.setControl(percentOutput.withOutput(Constants.Subsystems.Climber.kClimberUpSpeed));
     })
-    .until(() -> 
-    ClimbMotor.getPosition().getValueAsDouble() >= 61.3 )
-    .finallyDo(() -> {
-      ClimbMotor.setControl(percentOutput.withOutput(0.0));
+        .until(() -> ClimbMotor.getPosition().getValueAsDouble() >= Constants.Subsystems.Climber.kClimberUpTarget)
+        .finallyDo(() -> {
+          ClimbMotor.setControl(percentOutput.withOutput(0.0));
+
+        });
+  }
+
+  public Command OverDown() {
+    return this.run(() -> {
+      ClimbMotor.setControl(percentOutput.withOutput(Constants.Subsystems.Climber.kClimberManualSpeed));
 
     });
   }
 
-public Command OverDown(){
-  return this.run(() -> 
-  {
-    ClimbMotor.setControl(percentOutput.withOutput(-0.2));
- 
-  });
-}
-
-
-
-
-
-
-
-
-
   public Command DownClimb() {
-    return this.run(() -> 
-    {
-  
-      ClimbMotor.setControl(percentOutput.withOutput(-0.3));
-  })
-    .until(() -> 
-    ClimbMotor.getPosition().getValueAsDouble() <= 1.0 )
-    .finallyDo(() -> {
-      ClimbMotor.setControl(percentOutput.withOutput(0.0));
+    return this.run(() -> {
 
-    });
+      ClimbMotor.setControl(percentOutput.withOutput(Constants.Subsystems.Climber.kClimberDownSpeed));
+    })
+        .until(() -> ClimbMotor.getPosition().getValueAsDouble() <= Constants.Subsystems.Climber.kClimberDownTarget)
+        .finallyDo(() -> {
+          ClimbMotor.setControl(percentOutput.withOutput(0.0));
+
+        });
 
   }
 }
