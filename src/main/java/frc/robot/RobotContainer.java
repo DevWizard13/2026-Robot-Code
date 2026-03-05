@@ -72,7 +72,7 @@ public class RobotContainer {
                 // arcadeDrive expects (fwd, rot)
                 m_driveSubsystem.arcadeDrive(fwd, rot);
               } else {
-                double left = applyDeadbandAndScale(-m_driverController.getLeftY());
+                double left = applyDeadbandAndScale(m_driverController.getLeftY());
                 double right = applyDeadbandAndScale(m_driverController.getRightY());
                 m_driveSubsystem.tankDrive(left, right);
               }

@@ -37,6 +37,8 @@ public class DriveSubsystem extends SubsystemBase {
     private final RelativeEncoder rightEncoder = rightMaster.getEncoder();
     private final RelativeEncoder leftEncoder = leftMaster.getEncoder();
 
+
+
     // Tuning constant for correction
     private static final double kP = 0.05; // Proportional gain
     double wheelCircumference = Math.PI * 0.2032; // 8 inch diameter in meters
@@ -49,6 +51,12 @@ public class DriveSubsystem extends SubsystemBase {
     private Pose2d currentPose = new Pose2d();
 
     public DriveSubsystem() {
+
+            leftMaster.setInverted(true);
+            leftFollower.setInverted(true);
+        
+    
+
 
         pigeon.setYaw(0.0);
 
@@ -86,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
         // // return;
         // } else {
         // Normal arcade drive
-        drive.arcadeDrive(rot, fwd);
+        drive.arcadeDrive(fwd, rot);
         // }
     }
 
@@ -104,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void resetPose(Pose2d pose) {
         currentPose = pose;
-    }
+    }G
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
 
