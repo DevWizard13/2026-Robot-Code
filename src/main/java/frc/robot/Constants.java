@@ -10,9 +10,12 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -72,13 +75,20 @@ public final class Constants {
         }
 
         public static final class Vision {
+            //Target
+            public static final double kYawTarget = 0; //Radians
+            public static final double kDistanceTarget = 3; //Meters
             public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
                     .loadField(AprilTagFields.kDefaultField);
 
             public static final Pose2d kHubPoseBlue = new Pose2d(
-                    4.625594,
-                    4.034536,
+                    Units.inchesToMeters(182.11),
+                    Units.inchesToMeters(158.84),
                     new Rotation2d(0.0));
+            public static final Pose2d kHubPoseRed = new Pose2d(
+                Units.inchesToMeters(469.64),
+                Units.inchesToMeters(158.84),
+                new Rotation2d(0.0));
 
             public static final Transform3d kCameraToRobot = new Transform3d(
                     -0.1016, // forward from robot center

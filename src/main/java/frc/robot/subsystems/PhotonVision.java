@@ -88,16 +88,44 @@ public class PhotonVision extends SubsystemBase {
           Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
               Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).get(),
               Constants.Subsystems.Vision.kCameraToRobot);
-          // Distance
-          double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseBlue);
-          System.out.println("Distance to Target: " + distanceToTarget);
-          // Rotation
+
+          double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+                Constants.Subsystems.Vision.kHubPoseBlue);
           Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseBlue);
+
+
+
+          
+          var allianceOptional = DriverStation.getAlliance();
+          DriverStation.Alliance alliance = allianceOptional.get();
+
+
+
+          if (alliance == DriverStation.Alliance.Red) {
+            // Distance
+            distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+                Constants.Subsystems.Vision.kHubPoseBlue);
+            System.out.println("Distance to Target: " + distanceToTarget);
+            // Rotation
+            targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseRed);
+          } else if (alliance == DriverStation.Alliance.Blue){
+                        // Distance
+            distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+                Constants.Subsystems.Vision.kHubPoseBlue);
+            System.out.println("Distance to Target: " + distanceToTarget);
+            // Rotation
+            targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseBlue);
+          } else {
+            System.out.println("Error loading Allance color");
+          }
+
+
+
 
           System.out.println("Distance: " + distanceToTarget + " Target Yaw: " + targetYaw.getDegrees());
 
-          double rotaioionSpeed = turnPID.calculate(targetYaw.getRadians(), 0);
-          double driveSpeed = drivePID.calculate(distanceToTarget, 2.75);
+          double rotaioionSpeed = turnPID.calculate(targetYaw.getRadians(), Constants.Subsystems.Vision.kYawTarget);
+          double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
 
           // Clamp to safty range
           rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -Constants.Subsystems.Drive.kMaxNormalSpeed,
