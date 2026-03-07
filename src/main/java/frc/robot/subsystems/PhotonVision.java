@@ -25,7 +25,7 @@ public class PhotonVision extends SubsystemBase {
 
   private PhotonCamera camera;
 
-  PIDController turnPID = new PIDController(0.5, 0, 0);
+  PIDController turnPID = new PIDController(0.03, 0, 0.007);
   PIDController drivePID = new PIDController(0.5, 0, 0);
 
   /**
@@ -40,7 +40,7 @@ public class PhotonVision extends SubsystemBase {
 
     camera = new PhotonCamera("MainCamera");
 
-    turnPID.setTolerance(Math.toRadians(2)); // degrees
+    turnPID.setTolerance(3); // degrees
     drivePID.setTolerance(0.1); // meters
   }
 
@@ -120,20 +120,26 @@ public class PhotonVision extends SubsystemBase {
           }
 
 
-
-
+     
+            
           System.out.println("Distance: " + distanceToTarget + " Target Yaw: " + targetYaw.getDegrees());
 
-          double rotaioionSpeed = turnPID.calculate(targetYaw.getRadians(), Constants.Subsystems.Vision.kYawTarget);
+       
+           double rotaioionSpeed = turnPID.calculate(targetYaw.getDegrees(), Constants.Subsystems.Vision.kYawTarget);
+        
+
+  
           double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
 
           // Clamp to safty range
-          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, Constants.Subsystems.Drive.kMaxNormalSpeed,
+          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -Constants.Subsystems.Drive.kMaxNormalSpeed,
               Constants.Subsystems.Drive.kMaxNormalSpeed);
           driveSpeed = MathUtil.clamp(driveSpeed, -Constants.Subsystems.Drive.kMaxRotSpeed,
               Constants.Subsystems.Drive.kMaxRotSpeed);
 
+                if (!turnPID.atSetpoint() || !drivePID.atSetpoint()){
           m_driveSubsystem.arcadeDrive(driveSpeed, rotaioionSpeed);
+       }
 
           if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);

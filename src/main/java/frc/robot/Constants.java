@@ -38,6 +38,7 @@ public final class Constants {
             public static final int kLEFT_FOLLOWER = 6;
             public static final int kRIGHT_MASTER = 3;
             public static final int kRIGHT_FOLLOWER = 5;
+            public static final int kGyroPort = 17;
             // Speeds
             public static final double kStickDeadband = 0.07;
             public static final double kMaxBoostSpeed = 1.00;
@@ -51,7 +52,7 @@ public final class Constants {
             public static final int kShooter2Port = 0;
             // Speeds
             public static final double kMaxShooterSpeedOut1 = 0.85;// Shooter =85%
-            public static final double kMaxShooterSpeedOut2 = 0.76;// Shooter = 76%
+            public static final double kMaxShooterSpeedOut2 = 0.9;// Shooter = 76%
             public static final double kShooterTargetSpeed1 = 3427.0; // Target speed in RPM for the shooter
         }
 

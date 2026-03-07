@@ -23,7 +23,7 @@ import com.ctre.phoenix6.hardware.Pigeon2; //Gyro
 
 public class DriveSubsystem extends SubsystemBase {
 
-    private final Pigeon2 pigeon = new Pigeon2(17);
+    private final Pigeon2 pigeon = new Pigeon2(Constants.Subsystems.Drive.kGyroPort);
 
     private SparkMax leftMaster = new SparkMax(
             Constants.Subsystems.Drive.kLEFT_MASTER, MotorType.kBrushless);
@@ -133,7 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
                 speeds.vxMetersPerSecond,
                 speeds.omegaRadiansPerSecond);
     }
-
+    
     public Command resetPigeon() {
         return this.run(() -> {
 
