@@ -61,6 +61,9 @@ public class AgitatorSubsystem extends SubsystemBase {
   }
 
 
+  public void StartAgitatorVoid() {
+  AgitatorMotor.set(-Constants.Subsystems.Agitator.kMaxAgitatorSpeed);  }
+
 
   public Command StopAgitator() {
     return this.run(() -> {

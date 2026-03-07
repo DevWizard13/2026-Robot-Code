@@ -77,24 +77,26 @@ public class ShooterSubsystem extends SubsystemBase {
   }});
   }
 
+  public void StartShootVoid(){
+            Shooter1Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut1);
+      if (ShooterEncoder.getVelocity() > 2000){
+              Shooter2Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut2);
+  }  }
+
+
+
   public Command StopShoot() {
     return this.run(() -> {
-      Shooter1Motor.set(0.0);
-      Shooter2Motor.set(0.0);
-    });
+
+    
+
+            Shooter1Motor.set(0);
+    
+              Shooter2Motor.set(0);
+         
+  });
   }
 
 
-  // Named command for PathPlanner
-  public Command shoot_1_Command() {
-    return this.run(() -> {
-      ShooterEncoder.setPosition(0.0); // Reset encoder position to 0
-      if (ShooterEncoder.getPosition() < 42) {
-        StartShoot();
-      } else {
-        StopShoot();
-      }
-    });
-  }
 
 }

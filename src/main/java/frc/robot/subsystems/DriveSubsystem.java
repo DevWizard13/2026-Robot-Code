@@ -3,12 +3,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-
 
 // For CAN
 import com.revrobotics.spark.SparkMax;
@@ -24,17 +24,17 @@ import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
+import frc.robot.subsystems.PhotonVision;
 
 import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.Pigeon2; //Gyro
 
 public class DriveSubsystem extends SubsystemBase {
-        
+
+
 
     private final Field2d field = new Field2d();
-
-
 
     private final Pigeon2 pigeon = new Pigeon2(Constants.Subsystems.Drive.kGyroPort);
 
@@ -50,8 +50,8 @@ public class DriveSubsystem extends SubsystemBase {
     private final RelativeEncoder rightEncoder = rightMaster.getEncoder();
     private final RelativeEncoder leftEncoder = leftMaster.getEncoder();
 
-
-
+    boolean back = false;
+    boolean done = false;
     double leftDis = 0;
     double leftPos = 0;
     double rightPos = 0;
@@ -65,27 +65,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     private Pose2d currentPose = new Pose2d();
 
-      private final DifferentialDrivePoseEstimator m_poseEstimator =
-      new DifferentialDrivePoseEstimator(
-          Constants.Subsystems.Drive.kinematics,
-          pigeon.getRotation2d(),
-          leftEncoder.getPosition() / 8.45 * wheelCircumference, 
-          rightEncoder.getPosition() / 8.45 * wheelCircumference,
-          new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-
-
+    private final DifferentialDrivePoseEstimator m_poseEstimator = new DifferentialDrivePoseEstimator(
+            Constants.Subsystems.Drive.kinematics,
+            pigeon.getRotation2d(),
+            leftEncoder.getPosition() / 8.45 * wheelCircumference,
+            rightEncoder.getPosition() / 8.45 * wheelCircumference,
+            new Pose2d(),
+            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     public DriveSubsystem() {
 
 
-                SmartDashboard.putData("Field", field);
-            leftMaster.setInverted(true);
-            leftFollower.setInverted(true);
-        
-    
-
+        SmartDashboard.putData("Field", field);
+        leftMaster.setInverted(true);
+        leftFollower.setInverted(true);
 
         pigeon.setYaw(0.0);
 
@@ -127,6 +121,33 @@ public class DriveSubsystem extends SubsystemBase {
         // }
     }
 
+
+
+    public Command DriveForward() {
+        leftDis = 0;
+        rightDis = 0;
+        done = false;
+
+        return new RunCommand(() -> {
+            if (leftDis < 0.3 && !back) {
+                drive.arcadeDrive(-1, 0);
+                SmartDashboard.putNumber("Dis", leftDis);
+            } else if (leftDis > -0.3) {
+                  back = true;
+                drive.arcadeDrive(1, 0);
+
+            } else {
+              
+                drive.arcadeDrive(0, 0);
+              
+               
+               
+            }
+                
+        }, this).until(() -> done);
+       
+    }
+
     public void tankDrive(double left, double right) {
         drive.tankDrive(left, right);
     }
@@ -162,7 +183,7 @@ public class DriveSubsystem extends SubsystemBase {
                 speeds.vxMetersPerSecond,
                 speeds.omegaRadiansPerSecond);
     }
-    
+
     public Command resetPigeon() {
         return this.run(() -> {
 
@@ -172,9 +193,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     }
 
+    // public Command driveForward(){
+    // if ()
+    // // drive.arcadeDrive(-0.4, 0);
+
+    // }
 
     public Pose2d get2dPose() {
-    Pose2d pose = m_poseEstimator.getEstimatedPosition();
+        Pose2d pose = m_poseEstimator.getEstimatedPosition();
         return pose;
     }
 
@@ -185,14 +211,14 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Put periodic subsystem code here (telemetry, safety checks)
-    m_poseEstimator.update(
-        pigeon.getRotation2d(), leftDis, rightDis);
+        m_poseEstimator.update(
+                pigeon.getRotation2d(), leftDis, rightDis);
 
         double leftPosition = leftPos - leftEncoder.getPosition() / 8.45 * wheelCircumference;
         double rightPosition = rightPos - rightEncoder.getPosition() / 8.45 * wheelCircumference;
         leftPos = leftEncoder.getPosition() / 8.45 * wheelCircumference;
         rightPos = rightEncoder.getPosition() / 8.45 * wheelCircumference;
-     
+
         leftDis = leftDis + leftPosition;
         rightDis = rightDis + rightPosition;
         SmartDashboard.putNumber("Dis", rightDis);
@@ -203,8 +229,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("Pigeon Yaw", pigeon.getYaw().getValueAsDouble());
 
-         Pose2d pose = m_poseEstimator.getEstimatedPosition();
+        Pose2d pose = m_poseEstimator.getEstimatedPosition();
 
-         field.setRobotPose(pose);
+        field.setRobotPose(pose);
     }
 }

@@ -80,7 +80,7 @@ public final class Constants {
         public static final class Vision {
             //Target
             public static final double kYawTarget = -8; //Degrees
-            public static final double kDistanceTarget = 1.8; //Meters
+            public static final double kDistanceTarget = 1.9; //Meters
             public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
                     .loadField(AprilTagFields.kDefaultField);
 

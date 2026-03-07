@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Subsystems.Shooter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
@@ -35,7 +36,7 @@ public class PhotonVision extends SubsystemBase {
   private PhotonCamera camera;
 
   PIDController turnPID = new PIDController(0.08, 0.0, 0);
-  PIDController drivePID = new PIDController(0.6, 0, 0);
+  PIDController drivePID = new PIDController(1, 0, 0.1);
   Rotation2d targetYaw;
   double distanceToTarget;
   double rotaioionSpeed;
@@ -56,7 +57,7 @@ public class PhotonVision extends SubsystemBase {
     camera = new PhotonCamera("MainCamera");
 
     turnPID.setTolerance(3); // degrees
-    drivePID.setTolerance(0.06); // meters
+    drivePID.setTolerance(0.1524); // meters
 
     photonEstimator = new PhotonPoseEstimator(
       Constants.Subsystems.Vision.kAprilTagFieldLayout,
@@ -160,14 +161,11 @@ public class PhotonVision extends SubsystemBase {
           System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
           if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);
-            m_ShooterSubsystem.StartShoot();
-            m_AgitatorSubsystem.StartAgitator();
-            m_IntakeSubsystem.StartIntake();
-          } else {
-            m_ShooterSubsystem.StopShoot();
-            m_AgitatorSubsystem.StopAgitator();
-            m_IntakeSubsystem.StopIntake();
-          }
+            m_ShooterSubsystem.StartShootVoid();
+            m_AgitatorSubsystem.StartAgitatorVoid();
+            System.out.println("Shooting");
+            m_IntakeSubsystem.StartIntakeVoid();
+          } 
 
 
     }, m_driveSubsystem, m_ShooterSubsystem, m_AgitatorSubsystem, m_IntakeSubsystem);

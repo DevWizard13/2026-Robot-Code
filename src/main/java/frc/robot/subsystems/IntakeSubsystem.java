@@ -61,6 +61,13 @@ public class IntakeSubsystem extends SubsystemBase {
     });
   }
 
+
+  public void StartIntakeVoid(){
+      IntakeMotor.set(Constants.Subsystems.Intake.kMaxIntakeSpeed);
+  }
+
+
+
   public Command ReverseIntake() {
     return this.run(() -> {
       IntakeMotor.set(-Constants.Subsystems.Intake.kMaxIntakeSpeed);
