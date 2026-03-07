@@ -162,30 +162,6 @@ public class PhotonVision extends SubsystemBase {
             m_ShooterSubsystem.StopShoot();
           }
 
-          // if (targetYaw.getDegrees() > 2) {
-          // m_driveSubsystem.arcadeDrive(-0.4, 0);
-          // System.out.println("Turning -0.4");
-          // } else if (targetYaw.getDegrees() < -2) {
-          // m_driveSubsystem.arcadeDrive(0.4, 0);
-          // System.out.println("Turning 0.4");
-          // } else {
-
-          // if (Math.abs(distanceToTarget) > 3) {
-          // m_driveSubsystem.arcadeDrive(0, 0.4);
-          // System.out.println("Driving Forward 0.4");
-          // } else if (Math.abs(distanceToTarget) < 2.75) {
-          // m_driveSubsystem.arcadeDrive(0, -0.4);
-          // System.out.println("Driving Backward -0.4");
-          // } else {
-          // m_driveSubsystem.arcadeDrive(0, 0);
-          // m_ShooterSubsystem.StartShoot();
-          // }
-          // }
-
-        
-      // } else {
-      //   m_driveSubsystem.arcadeDrive(0, 0);
-      // }
 
     }, m_driveSubsystem, m_ShooterSubsystem);
   }}
