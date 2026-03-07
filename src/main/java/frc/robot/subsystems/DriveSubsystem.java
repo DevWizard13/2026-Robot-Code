@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void resetPose(Pose2d pose) {
         currentPose = pose;
-    }G
+    }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
 

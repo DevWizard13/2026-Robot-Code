@@ -25,7 +25,7 @@ public class PhotonVision extends SubsystemBase {
 
   private PhotonCamera camera;
 
-  PIDController turnPID = new PIDController(0.05, 0, 0);
+  PIDController turnPID = new PIDController(0.5, 0, 0);
   PIDController drivePID = new PIDController(0.5, 0, 0);
 
   /**
@@ -104,7 +104,7 @@ public class PhotonVision extends SubsystemBase {
           if (alliance == DriverStation.Alliance.Red) {
             // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
-                Constants.Subsystems.Vision.kHubPoseBlue);
+                Constants.Subsystems.Vision.kHubPoseRed);
             System.out.println("Distance to Target: " + distanceToTarget);
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseRed);
@@ -128,7 +128,7 @@ public class PhotonVision extends SubsystemBase {
           double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
 
           // Clamp to safty range
-          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -Constants.Subsystems.Drive.kMaxNormalSpeed,
+          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, Constants.Subsystems.Drive.kMaxNormalSpeed,
               Constants.Subsystems.Drive.kMaxNormalSpeed);
           driveSpeed = MathUtil.clamp(driveSpeed, -Constants.Subsystems.Drive.kMaxRotSpeed,
               Constants.Subsystems.Drive.kMaxRotSpeed);

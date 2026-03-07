@@ -94,7 +94,7 @@ public final class Constants {
                     -0.1016, // forward from robot center
                     0.0, // left/right camera is centered
                     0.5588, // up from floor
-                    new edu.wpi.first.math.geometry.Rotation3d(0, 0, 180));
+                    new edu.wpi.first.math.geometry.Rotation3d(0, 0, 0));
         }
 
         public static final class Agitaor {
