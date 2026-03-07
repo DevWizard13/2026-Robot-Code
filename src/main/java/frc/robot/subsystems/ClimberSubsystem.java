@@ -30,21 +30,6 @@ public class ClimberSubsystem extends SubsystemBase {
   public ClimberSubsystem() {
 
     SmartDashboard.putData("Zero Climber", new InstantCommand(() -> ClimbMotor.setPosition(0.0)));
-    CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
-
-    // ----- SUPPLY CURRENT LIMIT -----
-    currentLimits.SupplyCurrentLimit = 10; // Amps
-    currentLimits.SupplyCurrentLimitEnable = false;
-    // currentLimits.SupplyCurrentThreshold = 60; // Amps before limiting kicks in
-    // currentLimits.SupplyTimeThreshold = 0.5; // Seconds over threshold before
-    // limiting
-
-    // ----- STATOR CURRENT LIMIT -----
-    currentLimits.StatorCurrentLimit = 10; // Amps
-    currentLimits.StatorCurrentLimitEnable = false;
-    System.out.println("Climber Current Limits Configured");
-    // Apply the configuration to the motor
-    ClimbMotor.getConfigurator().apply(currentLimits);
 
     // Make the motor brake when no power is applied
     // ClimbMotor.setNeutralMode(NeutralModeValue.Brake);

@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 
 // For CAN
 import com.revrobotics.spark.SparkMax;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.*;
 
 import java.util.Optional;
@@ -29,7 +32,7 @@ import com.ctre.phoenix6.hardware.Pigeon2; //Gyro
 public class DriveSubsystem extends SubsystemBase {
         
 
-
+    private final Field2d field = new Field2d();
 
 
 
@@ -49,8 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
 
-    // Tuning constant for correction
-    private static final double kP = 0.05; // Proportional gain
+
     double wheelCircumference = Math.PI * 0.2032; // 8 inch diameter in meters
 
     private final MotorControllerGroup leftGroup = new MotorControllerGroup(leftMaster, leftFollower);
@@ -60,12 +62,15 @@ public class DriveSubsystem extends SubsystemBase {
 
     private Pose2d currentPose = new Pose2d();
 
+        // double leftEncod =  leftEncoder.getPosition() / 8.45;
+        // double rightEncod =  rightEncoder.getPosition() / 8.45;
+
       private final DifferentialDrivePoseEstimator m_poseEstimator =
       new DifferentialDrivePoseEstimator(
           Constants.Subsystems.Drive.kinematics,
           pigeon.getRotation2d(),
-          leftEncoder.getPosition(),
-          rightEncoder.getPosition(),
+          leftEncoder.getPosition() / 8.45, 
+          rightEncoder.getPosition() / 8.45,
           new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
@@ -74,6 +79,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     public DriveSubsystem() {
 
+
+                SmartDashboard.putData("Field", field);
             leftMaster.setInverted(true);
             leftFollower.setInverted(true);
         
@@ -179,15 +186,18 @@ public class DriveSubsystem extends SubsystemBase {
     public void periodic() {
         // Put periodic subsystem code here (telemetry, safety checks)
     m_poseEstimator.update(
-        pigeon.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition());
+        pigeon.getRotation2d(), leftEncoder.getPosition() / 8.45, rightEncoder.getPosition() / 8.45);
 
 
 
-        boolean isHot = leftMaster.getMotorTemperature() > 50 || rightMaster.getMotorTemperature() > 50
-                || leftFollower.getMotorTemperature() > 50 || rightFollower.getMotorTemperature() > 50;
-        SmartDashboard.putBoolean("Drive Overheating", isHot);
+        // boolean isHot = leftMaster.getMotorTemperature() > 50 || rightMaster.getMotorTemperature() > 50
+        //         || leftFollower.getMotorTemperature() > 50 || rightFollower.getMotorTemperature() > 50;
+        // SmartDashboard.putBoolean("Drive Overheating", isHot);
 
-        SmartDashboard.putNumber("Pigeon Yaw", pigeon.getYaw().getValueAsDouble());
+        // SmartDashboard.putNumber("Pigeon Yaw", pigeon.getYaw().getValueAsDouble());
 
+         Pose2d pose = m_poseEstimator.getEstimatedPosition();
+
+         field.setRobotPose(pose);
     }
 }
