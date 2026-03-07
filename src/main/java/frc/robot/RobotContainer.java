@@ -155,8 +155,8 @@ public class RobotContainer {
     // Intake control
     // Start Intake
     m_operatorController.rightTrigger()
-        .onTrue(m_IntakeSubsystem.StartIntake())
-        .onFalse(m_IntakeSubsystem.StopIntake());
+        .toggleOnTrue(m_IntakeSubsystem.StartIntake())
+        .toggleOnFalse(m_IntakeSubsystem.StopIntake());
 
 
 

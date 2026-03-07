@@ -57,8 +57,8 @@ public class PhotonVision extends SubsystemBase {
 
     camera = new PhotonCamera("MainCamera");
 
-    turnPID.setTolerance(5); // degrees
-    drivePID.setTolerance(0.1); // meters
+    turnPID.setTolerance(3); // degrees
+    drivePID.setTolerance(0.06); // meters
 
     photonEstimator = new PhotonPoseEstimator(Constants.Subsystems.Vision.kAprilTagFieldLayout,
         Constants.Subsystems.Vision.kCameraToRobot);
@@ -110,18 +110,7 @@ public class PhotonVision extends SubsystemBase {
 
   public Command AimShoot() {
     return new RunCommand(() -> {
-      // var result = camera.getLatestResult();
-
-      // if (result.hasTargets()) {
-
-      //   PhotonTrackedTarget target = result.getBestTarget();
-
-      //   // Calculate robot feild relative pose
-      //   if (Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
-      //     Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
-      //         Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).get(),
-      //         Constants.Subsystems.Vision.kCameraToRobot);
-
+  
           double distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
               Constants.Subsystems.Vision.kHubPoseBlue);
           Rotation2d targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(),
@@ -166,7 +155,7 @@ public class PhotonVision extends SubsystemBase {
           }
 
           System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
-          if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
+          if (turnPID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);
             m_ShooterSubsystem.StartShoot();
           } else {

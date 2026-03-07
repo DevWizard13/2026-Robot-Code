@@ -72,7 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
             Shooter1Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut1);
-      if (ShooterEncoder.getVelocity() > 1000){
+      if (ShooterEncoder.getVelocity() > 2000){
               Shooter2Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut2);
   }});
   }
