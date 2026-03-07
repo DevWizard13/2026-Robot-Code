@@ -78,7 +78,6 @@ public final class Constants {
         }
 
         public static final class Vision {
-            
             //Target
             public static final double kYawTarget = -19; //Degrees
             public static final double kDistanceTarget = 2.5; //Meters

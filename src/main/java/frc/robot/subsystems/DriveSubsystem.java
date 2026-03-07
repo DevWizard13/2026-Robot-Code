@@ -22,6 +22,8 @@ import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.*;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.hardware.Pigeon2; //Gyro
 
 public class DriveSubsystem extends SubsystemBase {
@@ -164,6 +166,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
+    public Pose2d get2dPose() {
+    Pose2d pose = m_poseEstimator.getEstimatedPosition();
+        return pose;
+    }
+
     public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
         m_poseEstimator.addVisionMeasurement(visionPose, timestampSeconds);
     }
@@ -173,6 +180,8 @@ public class DriveSubsystem extends SubsystemBase {
         // Put periodic subsystem code here (telemetry, safety checks)
     m_poseEstimator.update(
         pigeon.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition());
+
+
 
         boolean isHot = leftMaster.getMotorTemperature() > 50 || rightMaster.getMotorTemperature() > 50
                 || leftFollower.getMotorTemperature() > 50 || rightFollower.getMotorTemperature() > 50;

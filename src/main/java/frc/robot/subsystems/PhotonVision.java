@@ -100,28 +100,31 @@ public class PhotonVision extends SubsystemBase {
         visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
       }
       if (visionEst.isPresent()) {
-        m_driveSubsystem.addVisionMeasurement(visionEst, Timer.getFPGATimestamp());
+        EstimatedRobotPose estPose = visionEst.get();
+        Pose3d pose3d = estPose.estimatedPose;
+        Pose2d VisionEst2d = pose3d.toPose2d();
+        m_driveSubsystem.addVisionMeasurement(VisionEst2d, Timer.getFPGATimestamp());
       }
     }
   }
 
   public Command AimShoot() {
     return new RunCommand(() -> {
-      var result = camera.getLatestResult();
+      // var result = camera.getLatestResult();
 
-      if (result.hasTargets()) {
+      // if (result.hasTargets()) {
 
-        PhotonTrackedTarget target = result.getBestTarget();
+      //   PhotonTrackedTarget target = result.getBestTarget();
 
-        // Calculate robot feild relative pose
-        if (Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
-          Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
-              Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).get(),
-              Constants.Subsystems.Vision.kCameraToRobot);
+      //   // Calculate robot feild relative pose
+      //   if (Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
+      //     Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+      //         Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).get(),
+      //         Constants.Subsystems.Vision.kCameraToRobot);
 
-          double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+          double distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
               Constants.Subsystems.Vision.kHubPoseBlue);
-          Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(),
+          Rotation2d targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(),
               Constants.Subsystems.Vision.kHubPoseBlue);
 
           var allianceOptional = DriverStation.getAlliance();
@@ -129,18 +132,18 @@ public class PhotonVision extends SubsystemBase {
 
           if (alliance == DriverStation.Alliance.Red) {
             // Distance
-            distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+            distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
                 Constants.Subsystems.Vision.kHubPoseRed);
             System.out.println("Distance to Target: " + distanceToTarget);
             // Rotation
-            targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseRed);
+            targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseRed);
           } else if (alliance == DriverStation.Alliance.Blue) {
             // Distance
-            distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+            distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
                 Constants.Subsystems.Vision.kHubPoseBlue);
             System.out.println("Distance to Target: " + distanceToTarget);
             // Rotation
-            targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseBlue);
+            targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseBlue);
           } else {
             System.out.println("Error loading Allance color");
           }
@@ -190,12 +193,10 @@ public class PhotonVision extends SubsystemBase {
           // }
           // }
 
-        }
-      } else {
-        m_driveSubsystem.arcadeDrive(0, 0);
-      }
+        
+      // } else {
+      //   m_driveSubsystem.arcadeDrive(0, 0);
+      // }
 
     }, m_driveSubsystem, m_ShooterSubsystem);
-
-  }
-}
+  }}
