@@ -25,7 +25,7 @@ public class PhotonVision extends SubsystemBase {
 
   private PhotonCamera camera;
 
-  PIDController turnPID = new PIDController(0.03, 0, 0.007);
+  PIDController turnPID = new PIDController(0.03, 0, 0.01);
   PIDController drivePID = new PIDController(0.5, 0, 0);
 
   /**
