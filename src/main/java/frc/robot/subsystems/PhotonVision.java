@@ -94,6 +94,10 @@ public class PhotonVision extends SubsystemBase {
    */
   @Override
   public void periodic() {
+      RunCamera();
+  }
+
+  public void RunCamera(){
     var result = camera.getLatestResult();
     if (result.hasTargets()) {
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
@@ -108,11 +112,17 @@ public class PhotonVision extends SubsystemBase {
         m_driveSubsystem.addVisionMeasurement(VisionEst2d, Timer.getFPGATimestamp());
       }
     }
+
+
+
   }
+
 
   public Command AimShoot() {
     return new RunCommand(() -> {
   
+          
+          RunCamera();
           double distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
               Constants.Subsystems.Vision.kHubPoseBlue);
           Rotation2d targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(),
@@ -169,4 +179,8 @@ public class PhotonVision extends SubsystemBase {
 
 
     }, m_driveSubsystem, m_ShooterSubsystem, m_AgitatorSubsystem, m_IntakeSubsystem);
-  }}
+  }
+
+
+
+}

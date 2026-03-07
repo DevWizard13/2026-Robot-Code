@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -90,7 +91,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(Commands.sequence(
         m_driveForwardCommand, 
-        m_autonomousCommand)
+        new WaitCommand(2.0), // Wait 2 Seconds
+        m_autonomousCommand.repeatedly())
         );
     }
   }
@@ -109,6 +111,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+      m_driveForwardCommand.cancel();
     }
 
   }

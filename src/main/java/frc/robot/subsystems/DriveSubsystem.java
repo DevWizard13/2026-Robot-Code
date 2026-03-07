@@ -139,7 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
             } else {
               
                 drive.arcadeDrive(0, 0);
-              
+                done = true;
                
                
             }
