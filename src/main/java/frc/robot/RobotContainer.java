@@ -43,7 +43,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final PhotonVision m_photonVision = new PhotonVision(m_driveSubsystem, m_ShooterSubsystem);
+  private final PhotonVision m_photonVision = new PhotonVision(m_driveSubsystem, m_ShooterSubsystem, m_AgitatorSubsystem, m_IntakeSubsystem);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
@@ -126,8 +126,8 @@ public class RobotContainer {
 
     // Start Shooter (constant speed)
     m_driverController.rightTrigger()
-        .onTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator(), m_IntakeSubsystem.StartIntake()))
-        .onFalse(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator(), m_IntakeSubsystem.StopIntake()));
+        .whileTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator(), m_IntakeSubsystem.StartIntake()));
+      //  .onFalse(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator(), m_IntakeSubsystem.StopIntake()));
 
     // Climber control
     m_operatorController.a()

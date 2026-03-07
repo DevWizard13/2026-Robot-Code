@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,28 +12,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Subsystems.Vision;
-import frc.robot.Robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
-
-import javax.naming.spi.DirStateFactory.Result;
-
 import org.photonvision.EstimatedRobotPose;
 // PhotonVision imports
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+
 
 public class PhotonVision extends SubsystemBase {
   private final DriveSubsystem m_driveSubsystem;
   private final ShooterSubsystem m_ShooterSubsystem;
+  private final AgitatorSubsystem m_AgitatorSubsystem;
+  private final IntakeSubsystem m_IntakeSubsystem;
   private PhotonPoseEstimator photonEstimator;
 
   private PhotonCamera camera;
@@ -50,20 +45,26 @@ public class PhotonVision extends SubsystemBase {
    * 
    * @param drive   shared DriveSubsystem
    * @param shooter shared ShooterSubsystem
+   * @param agitator shared AgitatorSubsystem
    */
-  public PhotonVision(DriveSubsystem drive, ShooterSubsystem shooter) {
+  public PhotonVision(DriveSubsystem drive, ShooterSubsystem shooter, AgitatorSubsystem agitator, IntakeSubsystem intake) {
     this.m_driveSubsystem = drive;
     this.m_ShooterSubsystem = shooter;
+    this.m_AgitatorSubsystem = agitator;
+    this.m_IntakeSubsystem = intake;
 
     camera = new PhotonCamera("MainCamera");
 
     turnPID.setTolerance(3); // degrees
     drivePID.setTolerance(0.06); // meters
 
-    photonEstimator = new PhotonPoseEstimator(Constants.Subsystems.Vision.kAprilTagFieldLayout,
+    photonEstimator = new PhotonPoseEstimator(
+      Constants.Subsystems.Vision.kAprilTagFieldLayout,
         Constants.Subsystems.Vision.kCameraToRobot);
-
   }
+
+  
+    
 
   /**
    * Example command factory method.
@@ -125,6 +126,7 @@ public class PhotonVision extends SubsystemBase {
                 Constants.Subsystems.Vision.kHubPoseRed);
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseRed);
+
           } else if (alliance == DriverStation.Alliance.Blue) {
             // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
@@ -148,7 +150,7 @@ public class PhotonVision extends SubsystemBase {
           driveSpeed = MathUtil.clamp(driveSpeed, -1,
               1);
 
-                      SmartDashboard.putNumber("Drive", driveSpeed);
+                  
           if (!turnPID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, rotaioionSpeed);
           } else {
@@ -159,10 +161,14 @@ public class PhotonVision extends SubsystemBase {
           if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);
             m_ShooterSubsystem.StartShoot();
+            m_AgitatorSubsystem.StartAgitator();
+            m_IntakeSubsystem.StartIntake();
           } else {
             m_ShooterSubsystem.StopShoot();
+            m_AgitatorSubsystem.StopAgitator();
+            m_IntakeSubsystem.StopIntake();
           }
 
 
-    }, m_driveSubsystem, m_ShooterSubsystem);
+    }, m_driveSubsystem, m_ShooterSubsystem, m_AgitatorSubsystem, m_IntakeSubsystem);
   }}
