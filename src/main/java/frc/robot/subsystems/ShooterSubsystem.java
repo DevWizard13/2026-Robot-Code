@@ -25,26 +25,11 @@ public class ShooterSubsystem extends SubsystemBase {
   private PWMVictorSPX Shooter2Motor = new PWMVictorSPX(Constants.Subsystems.Shooter.kShooter2Port);
   private final RelativeEncoder ShooterEncoder = Shooter1Motor.getEncoder();
   // private final PIDController pid = new PIDController(0, 0.0, 0.0);
-  SparkClosedLoopController m_pidController = Shooter1Motor.getClosedLoopController();
-  SparkMaxConfig m_config = new SparkMaxConfig();
-  double P = 0.8;// 0008;
-  double I = 0;
-  double D = 0.0; // 0009
-  double velocityFF = 0.00; // 000175
+
 
   public ShooterSubsystem() {
     // Configure the PID controller with the desired gains and settings
-    m_config.closedLoop
-        .p(P)
-        .i(I)
-        .d(D)
-        .velocityFF(velocityFF)
-        .outputRange(-1, 1);
-
-    Shooter1Motor.configure(m_config,
-        SparkMax.ResetMode.kResetSafeParameters,
-        SparkMax.PersistMode.kPersistParameters);
-
+  
   }
 
 

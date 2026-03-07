@@ -13,15 +13,14 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 // For PWM
-//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 
 public class AgitatorSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private SparkMax AgitatorMotor;
+  private PWMVictorSPX AgitatorMotor = AgitatorMotor = new PWMVictorSPX(Constants.Subsystems.Agitator.kAgitatorPort);
 
   public AgitatorSubsystem() {
-    // AgitatorMotor = new SparkMax(Constants.SubsystemPorts.kAgitatorPort,
-    // MotorType.kBrushless);
+
 
   }
 
@@ -57,19 +56,15 @@ public class AgitatorSubsystem extends SubsystemBase {
 
   public Command StartAgitator() {
     return this.run(() -> {
-      // AgitatorMotor.set(Constants.MotorSpeeds.MaxAgitatorSpeed);
+       AgitatorMotor.set(-Constants.Subsystems.Agitator.kMaxAgitatorSpeed);
     });
   }
 
-  public Command ReverseAgitator() {
-    return this.run(() -> {
-      // AgitatorMotor.set(-Constants.MotorSpeeds.MaxAgitatorSpeed);
-    });
-  }
+
 
   public Command StopAgitator() {
     return this.run(() -> {
-      // AgitatorMotor.set(0);
+       AgitatorMotor.set(0);
     });
   }
 

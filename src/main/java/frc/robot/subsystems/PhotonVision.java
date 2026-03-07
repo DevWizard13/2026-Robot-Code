@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // PhotonVision imports
 import org.photonvision.PhotonCamera;
@@ -25,8 +26,11 @@ public class PhotonVision extends SubsystemBase {
 
   private PhotonCamera camera;
 
-  PIDController turnPID = new PIDController(0.03, 0, 0.01);
+  PIDController turnPID = new PIDController(0.03, 0.05, 0);
   PIDController drivePID = new PIDController(0.5, 0, 0);
+  Rotation2d targetYaw;
+  double distanceToTarget;
+  double rotaioionSpeed;
 
   /**
    * Construct PhotonVision with shared subsystem references.
@@ -40,7 +44,7 @@ public class PhotonVision extends SubsystemBase {
 
     camera = new PhotonCamera("MainCamera");
 
-    turnPID.setTolerance(3); // degrees
+    turnPID.setTolerance(5); // degrees
     drivePID.setTolerance(0.1); // meters
   }
 
@@ -72,6 +76,9 @@ public class PhotonVision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // SmartDashboard.putNumber("Target Yaw: ", targetYaw.getDegrees());
+    // SmartDashboard.putNumber("Delta: ", rotaioionSpeed);
+    // SmartDashboard.putNumber("Dis: ", distanceToTarget);
 
   }
 
@@ -90,16 +97,12 @@ public class PhotonVision extends SubsystemBase {
               Constants.Subsystems.Vision.kCameraToRobot);
 
           double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
-                Constants.Subsystems.Vision.kHubPoseBlue);
-          Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseBlue);
+              Constants.Subsystems.Vision.kHubPoseBlue);
+          Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(),
+              Constants.Subsystems.Vision.kHubPoseBlue);
 
-
-
-          
           var allianceOptional = DriverStation.getAlliance();
           DriverStation.Alliance alliance = allianceOptional.get();
-
-
 
           if (alliance == DriverStation.Alliance.Red) {
             // Distance
@@ -108,8 +111,8 @@ public class PhotonVision extends SubsystemBase {
             System.out.println("Distance to Target: " + distanceToTarget);
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.kHubPoseRed);
-          } else if (alliance == DriverStation.Alliance.Blue){
-                        // Distance
+          } else if (alliance == DriverStation.Alliance.Blue) {
+            // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
                 Constants.Subsystems.Vision.kHubPoseBlue);
             System.out.println("Distance to Target: " + distanceToTarget);
@@ -119,16 +122,9 @@ public class PhotonVision extends SubsystemBase {
             System.out.println("Error loading Allance color");
           }
 
+          System.out.println("Yaw" + targetYaw.getDegrees());
+          double rotaioionSpeed = turnPID.calculate(targetYaw.getDegrees(), Constants.Subsystems.Vision.kYawTarget);
 
-     
-            
-          System.out.println("Distance: " + distanceToTarget + " Target Yaw: " + targetYaw.getDegrees());
-
-       
-           double rotaioionSpeed = turnPID.calculate(targetYaw.getDegrees(), Constants.Subsystems.Vision.kYawTarget);
-        
-
-  
           double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
 
           // Clamp to safty range
@@ -137,10 +133,14 @@ public class PhotonVision extends SubsystemBase {
           driveSpeed = MathUtil.clamp(driveSpeed, -Constants.Subsystems.Drive.kMaxRotSpeed,
               Constants.Subsystems.Drive.kMaxRotSpeed);
 
-                if (!turnPID.atSetpoint() || !drivePID.atSetpoint()){
-          m_driveSubsystem.arcadeDrive(driveSpeed, rotaioionSpeed);
-       }
+          if (!turnPID.atSetpoint()) {
+            m_driveSubsystem.arcadeDrive(0, rotaioionSpeed);
+          } else {
+            m_driveSubsystem.arcadeDrive(driveSpeed, 0);
+          }
 
+
+          System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
           if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);
             m_ShooterSubsystem.StartShoot();

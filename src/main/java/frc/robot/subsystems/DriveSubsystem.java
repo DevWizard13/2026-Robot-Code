@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.util.Units;
 
 // For CAN
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +17,8 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.*;
 
@@ -49,6 +52,16 @@ public class DriveSubsystem extends SubsystemBase {
     private final DifferentialDrive drive = new DifferentialDrive(leftGroup, rightGroup);
 
     private Pose2d currentPose = new Pose2d();
+
+      private final DifferentialDrivePoseEstimator m_poseEstimator =
+      new DifferentialDrivePoseEstimator(
+          Constants.Subsystems.Drive.kinematics,
+          pigeon.getRotation2d(),
+          leftEncoder.getPosition(),
+          rightEncoder.getPosition(),
+          new Pose2d(),
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     public DriveSubsystem() {
 
@@ -143,21 +156,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     }
 
+
+    
+
     @Override
     public void periodic() {
         // Put periodic subsystem code here (telemetry, safety checks)
-
-        // Display motor temperatures on SmartDashboard
-        // SmartDashboard.putNumber("Left Front Temp C",
-        // leftMaster.getMotorTemperature());
-        // SmartDashboard.putNumber("Right Front Temp C",
-        // rightMaster.getMotorTemperature());
-        // SmartDashboard.putNumber("Left Back Temp C",
-        // leftFollower.getMotorTemperature());
-        // SmartDashboard.putNumber("Right Back Temp C",
-        // rightFollower.getMotorTemperature());
-        // SmartDashboard.putNumber("Left Side Velocity", leftEncoder.getVelocity());
-        // SmartDashboard.putNumber("Right Side Velocity", rightEncoder.getVelocity());
+    m_poseEstimator.update(
+        pigeon.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition());
 
         boolean isHot = leftMaster.getMotorTemperature() > 50 || rightMaster.getMotorTemperature() > 50
                 || leftFollower.getMotorTemperature() > 50 || rightFollower.getMotorTemperature() > 50;

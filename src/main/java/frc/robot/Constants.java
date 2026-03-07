@@ -13,6 +13,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 
@@ -43,6 +44,8 @@ public final class Constants {
             public static final double kMaxBoostSpeed = 1.00;
             public static final double kMaxNormalSpeed = 0.70;
             public static final double kMaxRotSpeed = 0.5; // Only used in vision
+        
+            public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(5.46);
         }
 
         public static final class Shooter {
@@ -51,7 +54,7 @@ public final class Constants {
             public static final int kShooter2Port = 0;
             // Speeds
             public static final double kMaxShooterSpeedOut1 = 0.85;// Shooter =85%
-            public static final double kMaxShooterSpeedOut2 = 0.9;// Shooter = 76%
+            public static final double kMaxShooterSpeedOut2 = 0.76;// Shooter = 76%
             public static final double kShooterTargetSpeed1 = 3427.0; // Target speed in RPM for the shooter
         }
 
@@ -71,13 +74,13 @@ public final class Constants {
             // Ports
             public static final int kIntakePort = 12;
             // Speeds
-            public static final double kMaxIntakeSpeed = 0.20; // IntakeSpeed = 40%
+            public static final double kMaxIntakeSpeed = 0.24; // IntakeSpeed = 40%
         }
 
         public static final class Vision {
             //Target
-            public static final double kYawTarget = 0; //Radians
-            public static final double kDistanceTarget = 3; //Meters
+            public static final double kYawTarget = -19; //Degrees
+            public static final double kDistanceTarget = 2.5; //Meters
             public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
                     .loadField(AprilTagFields.kDefaultField);
 
@@ -97,11 +100,11 @@ public final class Constants {
                     new edu.wpi.first.math.geometry.Rotation3d(0, 0, 0));
         }
 
-        public static final class Agitaor {
+        public static final class Agitator {
             // Ports
-            public static final int kAgitatorPort = 15;
+            public static final int kAgitatorPort = 7;//PWM
             // Speeds
-            public static final double kMaxAgitatorSpeed = 0.30; // Agitator Speed = 30%
+            public static final double kMaxAgitatorSpeed = 1.0; // Agitator Speed = 30%
         }
     }
 

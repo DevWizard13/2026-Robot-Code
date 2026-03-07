@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.Controls.Driver;
 import frc.robot.Constants.Controls.Operator;
+
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +16,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.AgitatorSubsystem;
 import frc.robot.subsystems.PhotonVision;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -124,8 +126,8 @@ public class RobotContainer {
 
     // Start Shooter (constant speed)
     m_driverController.rightTrigger()
-        .onTrue(m_ShooterSubsystem.StartShoot())
-        .onFalse(m_ShooterSubsystem.StopShoot());
+        .onTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator()))
+        .onFalse(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator()));
 
     // Climber control
     m_operatorController.a()
@@ -151,21 +153,9 @@ public class RobotContainer {
         .onTrue(m_IntakeSubsystem.StartIntake())
         .onFalse(m_IntakeSubsystem.StopIntake());
 
-    // Stop Intake
-    m_operatorController.rightBumper()
-        .onTrue(m_IntakeSubsystem.ReverseIntake())
-        .onFalse(m_IntakeSubsystem.StopIntake());
 
-    // Agitator Control
-    // Agitaor Forward
-    m_operatorController.leftTrigger()
-        .onTrue(m_AgitatorSubsystem.StartAgitator())
-        .onFalse(m_AgitatorSubsystem.StopAgitator());
 
-    // Agitator reverse
-    m_operatorController.leftBumper()
-        .onTrue(m_AgitatorSubsystem.ReverseAgitator())
-        .onFalse(m_AgitatorSubsystem.StopAgitator());
+
 
   }
 
