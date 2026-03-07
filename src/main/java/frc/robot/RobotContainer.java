@@ -139,6 +139,11 @@ public class RobotContainer {
     m_operatorController.povUp()
         .onTrue(m_ClimberSubsystem.UpClimb());
 
+
+    //Gyro zero
+    m_operatorController.y()
+      .onTrue(m_driveSubsystem.resetPigeon());
+
     // Climber Down All the way
     m_operatorController.povDown()
         .onTrue(m_ClimberSubsystem.DownClimb());

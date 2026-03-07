@@ -52,7 +52,10 @@ public class DriveSubsystem extends SubsystemBase {
 
 
 
-
+    double leftDis = 0;
+    double leftPos = 0;
+    double rightPos = 0;
+    double rightDis = 0;
     double wheelCircumference = Math.PI * 0.2032; // 8 inch diameter in meters
 
     private final MotorControllerGroup leftGroup = new MotorControllerGroup(leftMaster, leftFollower);
@@ -186,15 +189,22 @@ public class DriveSubsystem extends SubsystemBase {
     public void periodic() {
         // Put periodic subsystem code here (telemetry, safety checks)
     m_poseEstimator.update(
-        pigeon.getRotation2d(), leftEncoder.getPosition() / 8.45, rightEncoder.getPosition() / 8.45);
+        pigeon.getRotation2d(), leftDis, rightDis);
 
+        double leftPosition = leftPos - leftEncoder.getPosition() / 8.45;
+        double rightPosition = rightPos - rightEncoder.getPosition() / 8.45;
+        leftPos = leftEncoder.getPosition() / 8.45;
+        rightPos = rightEncoder.getPosition() / 8.45;
+     
+        leftDis = leftDis + leftPosition;
+        rightDis = rightDis + rightPosition;
+        SmartDashboard.putNumber("Dis", rightDis);
 
+        boolean isHot = leftMaster.getMotorTemperature() > 50 || rightMaster.getMotorTemperature() > 50
+                || leftFollower.getMotorTemperature() > 50 || rightFollower.getMotorTemperature() > 50;
+        SmartDashboard.putBoolean("Drive Overheating", isHot);
 
-        // boolean isHot = leftMaster.getMotorTemperature() > 50 || rightMaster.getMotorTemperature() > 50
-        //         || leftFollower.getMotorTemperature() > 50 || rightFollower.getMotorTemperature() > 50;
-        // SmartDashboard.putBoolean("Drive Overheating", isHot);
-
-        // SmartDashboard.putNumber("Pigeon Yaw", pigeon.getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("Pigeon Yaw", pigeon.getYaw().getValueAsDouble());
 
          Pose2d pose = m_poseEstimator.getEstimatedPosition();
 
