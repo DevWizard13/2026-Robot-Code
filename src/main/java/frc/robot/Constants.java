@@ -79,7 +79,7 @@ public final class Constants {
 
         public static final class Vision {
             //Target
-            public static final double kYawTarget = -8; //Degrees
+            public static final double kYawTarget = -9; //Degrees
             public static final double kDistanceTarget = 1.9; //Meters
             public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
                     .loadField(AprilTagFields.kDefaultField);
@@ -93,6 +93,26 @@ public final class Constants {
                 Units.inchesToMeters(158.84),
                 new Rotation2d(0.0));
 
+
+                       
+            public static final Pose2d kClimbFinalRed = new Pose2d(
+                Units.inchesToMeters(608.5),
+                Units.inchesToMeters(146.22),
+                new Rotation2d(0.0));
+            public static final Pose2d kClimbFinalBlue = new Pose2d(
+                Units.inchesToMeters(41.5),
+                Units.inchesToMeters(164.47),
+                new Rotation2d(0.0));
+            public static final Pose2d kClimbFirstRed = new Pose2d(
+                Units.inchesToMeters(580.03),
+                Units.inchesToMeters(146.22),
+                new Rotation2d(0.0));
+            public static final Pose2d kClimbFirstBlue = new Pose2d(
+                Units.inchesToMeters(79.33),
+                Units.inchesToMeters(164.47),
+                new Rotation2d(0.0));
+            
+
             public static final Transform3d kCameraToRobot = new Transform3d(
                     -0.1016, // forward from robot center
                     0.0, // left/right camera is centered
@@ -105,7 +125,7 @@ public final class Constants {
             // Ports
             public static final int kAgitatorPort = 7;//PWM
             // Speeds
-            public static final double kMaxAgitatorSpeed = 1.0; // Agitator Speed = 30%
+            public static final double kMaxAgitatorSpeed = 0.7; // Agitator Speed = 30%
         }
     }
 
