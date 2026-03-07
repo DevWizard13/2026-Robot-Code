@@ -5,24 +5,37 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Subsystems.Vision;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.Optional;
+
+import javax.naming.spi.DirStateFactory.Result;
+
+import org.photonvision.EstimatedRobotPose;
 // PhotonVision imports
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class PhotonVision extends SubsystemBase {
   private final DriveSubsystem m_driveSubsystem;
   private final ShooterSubsystem m_ShooterSubsystem;
+  private PhotonPoseEstimator photonEstimator;
 
   private PhotonCamera camera;
 
@@ -46,6 +59,10 @@ public class PhotonVision extends SubsystemBase {
 
     turnPID.setTolerance(5); // degrees
     drivePID.setTolerance(0.1); // meters
+
+    photonEstimator = new PhotonPoseEstimator(Constants.Subsystems.Vision.kAprilTagFieldLayout,
+        Constants.Subsystems.Vision.kCameraToRobot);
+
   }
 
   /**
@@ -75,11 +92,17 @@ public class PhotonVision extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("Target Yaw: ", targetYaw.getDegrees());
-    // SmartDashboard.putNumber("Delta: ", rotaioionSpeed);
-    // SmartDashboard.putNumber("Dis: ", distanceToTarget);
-
+    var result = camera.getLatestResult();
+    if (result.hasTargets()) {
+      Optional<EstimatedRobotPose> visionEst = Optional.empty();
+      visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
+      if (visionEst.isEmpty()) {
+        visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
+      }
+      if (visionEst.isPresent()) {
+        m_driveSubsystem.addVisionMeasurement(visionEst, Timer.getFPGATimestamp());
+      }
+    }
   }
 
   public Command AimShoot() {
@@ -138,7 +161,6 @@ public class PhotonVision extends SubsystemBase {
           } else {
             m_driveSubsystem.arcadeDrive(driveSpeed, 0);
           }
-
 
           System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
           if (turnPID.atSetpoint() && drivePID.atSetpoint()) {

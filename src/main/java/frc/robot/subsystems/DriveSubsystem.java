@@ -25,6 +25,11 @@ import edu.wpi.first.math.kinematics.*;
 import com.ctre.phoenix6.hardware.Pigeon2; //Gyro
 
 public class DriveSubsystem extends SubsystemBase {
+        
+
+
+
+
 
     private final Pigeon2 pigeon = new Pigeon2(Constants.Subsystems.Drive.kGyroPort);
 
@@ -62,6 +67,8 @@ public class DriveSubsystem extends SubsystemBase {
           new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
+
 
     public DriveSubsystem() {
 
@@ -157,7 +164,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
-    
+    public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
+        m_poseEstimator.addVisionMeasurement(visionPose, timestampSeconds);
+    }
 
     @Override
     public void periodic() {
