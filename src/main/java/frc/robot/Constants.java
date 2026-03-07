@@ -74,7 +74,7 @@ public final class Constants {
             // Ports
             public static final int kIntakePort = 12;
             // Speeds
-            public static final double kMaxIntakeSpeed = 0.40; // IntakeSpeed = 40%
+            public static final double kMaxIntakeSpeed = 0.32; // IntakeSpeed = 32%
         }
 
         public static final class Vision {
