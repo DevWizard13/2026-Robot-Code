@@ -65,15 +65,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     private Pose2d currentPose = new Pose2d();
 
-        // double leftEncod =  leftEncoder.getPosition() / 8.45;
-        // double rightEncod =  rightEncoder.getPosition() / 8.45;
-
       private final DifferentialDrivePoseEstimator m_poseEstimator =
       new DifferentialDrivePoseEstimator(
           Constants.Subsystems.Drive.kinematics,
           pigeon.getRotation2d(),
-          leftEncoder.getPosition() / 8.45, 
-          rightEncoder.getPosition() / 8.45,
+          leftEncoder.getPosition() / 8.45 * wheelCircumference, 
+          rightEncoder.getPosition() / 8.45 * wheelCircumference,
           new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
@@ -191,10 +188,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_poseEstimator.update(
         pigeon.getRotation2d(), leftDis, rightDis);
 
-        double leftPosition = leftPos - leftEncoder.getPosition() / 8.45;
-        double rightPosition = rightPos - rightEncoder.getPosition() / 8.45;
-        leftPos = leftEncoder.getPosition() / 8.45;
-        rightPos = rightEncoder.getPosition() / 8.45;
+        double leftPosition = leftPos - leftEncoder.getPosition() / 8.45 * wheelCircumference;
+        double rightPosition = rightPos - rightEncoder.getPosition() / 8.45 * wheelCircumference;
+        leftPos = leftEncoder.getPosition() / 8.45 * wheelCircumference;
+        rightPos = rightEncoder.getPosition() / 8.45 * wheelCircumference;
      
         leftDis = leftDis + leftPosition;
         rightDis = rightDis + rightPosition;

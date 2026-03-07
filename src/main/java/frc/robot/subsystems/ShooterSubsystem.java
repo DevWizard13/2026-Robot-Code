@@ -70,10 +70,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return this.run(() -> {
 
 
-      // m_pidController.setReference(3500, SparkMax.ControlType.kVelocity);
-      Shooter2Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut2);
-      if (ShooterEncoder.getVelocity() > 2400){
-      Shooter1Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut1);
+
+            Shooter1Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut1);
+      if (ShooterEncoder.getVelocity() > 1000){
+              Shooter2Motor.set(Constants.Subsystems.Shooter.kMaxShooterSpeedOut2);
   }});
   }
 
