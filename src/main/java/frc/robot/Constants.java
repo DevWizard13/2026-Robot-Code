@@ -74,12 +74,12 @@ public final class Constants {
             // Ports
             public static final int kIntakePort = 12;
             // Speeds
-            public static final double kMaxIntakeSpeed = 0.32; // IntakeSpeed = 32%
+            public static final double kMaxIntakeSpeed = 0.20; // IntakeSpeed = 32%
         }
 
         public static final class Vision {
             //Target
-            public static final double kYawTarget = -10; //Degrees
+            public static final double kYawTarget = -8; //Degrees
             public static final double kDistanceTarget = 1.8; //Meters
             public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
                     .loadField(AprilTagFields.kDefaultField);

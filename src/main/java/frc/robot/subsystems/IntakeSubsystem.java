@@ -11,21 +11,17 @@ import frc.robot.Constants;
 // For CAN
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 // For PWM
 //import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 public class IntakeSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private SparkMax IntakeMotor;
+  private SparkMax IntakeMotor = new SparkMax(Constants.Subsystems.Intake.kIntakePort, MotorType.kBrushless);
+
 
   public IntakeSubsystem() {
-
-    // For CAN
-
-    IntakeMotor = new SparkMax(Constants.Subsystems.Intake.kIntakePort, MotorType.kBrushless);
-
-    // For PWM
-    // IntakeMotor = new PWMSparkMax(Constants.SubsystemPorts.IntakePort);
+    
 
   }
 

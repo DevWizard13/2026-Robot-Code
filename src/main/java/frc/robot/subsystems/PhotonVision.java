@@ -39,8 +39,8 @@ public class PhotonVision extends SubsystemBase {
 
   private PhotonCamera camera;
 
-  PIDController turnPID = new PIDController(0.03, 0.05, 0);
-  PIDController drivePID = new PIDController(0.5, 0, 0);
+  PIDController turnPID = new PIDController(0.08, 0.0, 0);
+  PIDController drivePID = new PIDController(0.6, 0, 0);
   Rotation2d targetYaw;
   double distanceToTarget;
   double rotaioionSpeed;
@@ -123,14 +123,13 @@ public class PhotonVision extends SubsystemBase {
             // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
                 Constants.Subsystems.Vision.kHubPoseRed);
-            System.out.println("Distance to Target: " + distanceToTarget);
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseRed);
           } else if (alliance == DriverStation.Alliance.Blue) {
             // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
                 Constants.Subsystems.Vision.kHubPoseBlue);
-            System.out.println("Distance to Target: " + distanceToTarget);
+    
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseBlue);
           } else {
@@ -141,13 +140,15 @@ public class PhotonVision extends SubsystemBase {
           double rotaioionSpeed = turnPID.calculate(targetYaw.getDegrees(), Constants.Subsystems.Vision.kYawTarget);
 
           double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
+  
 
           // Clamp to safty range
-          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -Constants.Subsystems.Drive.kMaxNormalSpeed,
-              Constants.Subsystems.Drive.kMaxNormalSpeed);
-          driveSpeed = MathUtil.clamp(driveSpeed, -Constants.Subsystems.Drive.kMaxRotSpeed,
-              Constants.Subsystems.Drive.kMaxRotSpeed);
+          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -0.7,
+             0.7);
+          driveSpeed = MathUtil.clamp(driveSpeed, -1,
+              1);
 
+                      SmartDashboard.putNumber("Drive", driveSpeed);
           if (!turnPID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, rotaioionSpeed);
           } else {
@@ -155,7 +156,7 @@ public class PhotonVision extends SubsystemBase {
           }
 
           System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
-          if (turnPID.atSetpoint()) {
+          if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);
             m_ShooterSubsystem.StartShoot();
           } else {

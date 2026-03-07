@@ -126,8 +126,8 @@ public class RobotContainer {
 
     // Start Shooter (constant speed)
     m_driverController.rightTrigger()
-        .onTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator()))
-        .onFalse(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator()));
+        .onTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator(), m_IntakeSubsystem.StartIntake()))
+        .onFalse(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator(), m_IntakeSubsystem.StopIntake()));
 
     // Climber control
     m_operatorController.a()
