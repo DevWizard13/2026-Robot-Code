@@ -22,6 +22,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonVision extends SubsystemBase {
   private final DriveSubsystem m_driveSubsystem;
   private final ShooterSubsystem m_ShooterSubsystem;
+  private final ClimberSubsystem m_climberSubsystem;
 
   private PhotonCamera camera;
 
@@ -34,9 +35,10 @@ public class PhotonVision extends SubsystemBase {
    * @param drive   shared DriveSubsystem
    * @param shooter shared ShooterSubsystem
    */
-  public PhotonVision(DriveSubsystem drive, ShooterSubsystem shooter) {
+  public PhotonVision(DriveSubsystem drive, ShooterSubsystem shooter, ClimberSubsystem climber) {
     this.m_driveSubsystem = drive;
     this.m_ShooterSubsystem = shooter;
+    m_climberSubsystem = climber;
 
     camera = new PhotonCamera("MainCamera");
 
@@ -73,6 +75,72 @@ public class PhotonVision extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
+  }
+
+  public Command AimClimb() {
+    return new RunCommand(() -> {
+      var result = camera.getLatestResult();
+
+      if (result.hasTargets()) {
+
+        PhotonTrackedTarget target = result.getBestTarget();
+
+        // Calculate robot feild relative pose
+        if (Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
+          Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+              Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).get(),
+              Constants.Subsystems.Vision.kCameraToRobot);
+
+          var allianceOptional = DriverStation.getAlliance();
+          DriverStation.Alliance alliance = allianceOptional.get();
+
+          double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+                Constants.Subsystems.Vision.blueClimbPos);
+          Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.blueClimbPos);
+
+          if (alliance == DriverStation.Alliance.Red) {
+            // Distance
+            distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+                Constants.Subsystems.Vision.redClimbPos);
+            System.out.println("Distance to Target: " + distanceToTarget);
+            // Rotation
+            targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.redClimbPos);
+          } else if (alliance == DriverStation.Alliance.Blue){
+                        // Distance
+            distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
+                Constants.Subsystems.Vision.blueClimbPos);
+            System.out.println("Distance to Target: " + distanceToTarget);
+            // Rotation
+            targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.blueClimbPos);
+          } else {
+            System.out.println("Error loading Allance color");
+          }
+
+          System.out.println("Distance: " + distanceToTarget + " Target Yaw: " + targetYaw.getDegrees());
+
+          double rotaioionSpeed = turnPID.calculate(targetYaw.getRadians(), Constants.Subsystems.Vision.kYawTarget);
+          double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
+
+          // Clamp to safty range
+          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -Constants.Subsystems.Drive.kMaxNormalSpeed,
+              Constants.Subsystems.Drive.kMaxNormalSpeed);
+          driveSpeed = MathUtil.clamp(driveSpeed, -Constants.Subsystems.Drive.kMaxRotSpeed,
+              Constants.Subsystems.Drive.kMaxRotSpeed);
+
+          m_driveSubsystem.arcadeDrive(driveSpeed, rotaioionSpeed);
+
+          if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
+            m_driveSubsystem.arcadeDrive(0, 0);
+            m_climberSubsystem.UpClimb();
+          } else {
+            m_climberSubsystem.StopClimb();
+          }
+        }
+      } else {
+        m_climberSubsystem.StopClimb();
+      }
+
+    }, m_driveSubsystem, m_climberSubsystem);
   }
 
   public Command AimShoot() {

@@ -81,6 +81,23 @@ public final class Constants {
             public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
                     .loadField(AprilTagFields.kDefaultField);
 
+            // TODO:
+            public static final Pose2d blueClimbPos = new Pose2d(
+                    Units.inchesToMeters(182.11),
+                    Units.inchesToMeters(158.84),
+                    new Rotation2d(0.0)
+            );
+            public static final Pose2d redClimbPos = new Pose2d(
+                Units.inchesToMeters(469.64),
+                Units.inchesToMeters(158.84),
+                new Rotation2d(0.0)
+            );
+            public static final Pose2d climberOffset = new Pose2d(
+                Units.inchesToMeters(469.64),
+                Units.inchesToMeters(158.84),
+                new Rotation2d(0.0)
+            );
+
             public static final Pose2d kHubPoseBlue = new Pose2d(
                     Units.inchesToMeters(182.11),
                     Units.inchesToMeters(158.84),

@@ -95,11 +95,11 @@ public class ClimberSubsystem extends SubsystemBase {
 
       ClimbMotor.setControl(percentOutput.withOutput(Constants.Subsystems.Climber.kClimberUpSpeed));
     })
-        .until(() -> ClimbMotor.getPosition().getValueAsDouble() >= Constants.Subsystems.Climber.kClimberUpTarget)
-        .finallyDo(() -> {
-          ClimbMotor.setControl(percentOutput.withOutput(0.0));
-
-        });
+    .until(() -> ClimbMotor.getPosition().getValueAsDouble() >= Constants.Subsystems.Climber.kClimberUpTarget)
+    .finallyDo(() -> {
+      ClimbMotor.setControl(percentOutput.withOutput(0.0));
+    
+    });
   }
 
   public Command OverDown() {
