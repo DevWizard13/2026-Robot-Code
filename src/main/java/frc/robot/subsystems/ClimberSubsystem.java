@@ -109,7 +109,7 @@ public class ClimberSubsystem extends SubsystemBase {
     ClimbMotor.setControl(percentOutput.withOutput(0.2));
     })
     .until(() -> 
-    ClimbMotor.getPosition().getValueAsDouble() >= 57.3 )
+    ClimbMotor.getPosition().getValueAsDouble() >= 61.3 )
     .finallyDo(() -> {
       ClimbMotor.setControl(percentOutput.withOutput(0.0));
 
