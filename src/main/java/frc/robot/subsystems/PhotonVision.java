@@ -14,6 +14,8 @@ import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.MathUtil;
 
+import java.util.*;
+
 // PhotonVision imports
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -81,22 +83,16 @@ public class PhotonVision extends SubsystemBase {
     return new RunCommand(() -> {
       var result = camera.getLatestResult();
 
+      Pose3d robotPose = new Pose3d();
+      var allianceOptional = Optional.empty();
+      double distanceToTarget = 0.0;
+      Rotation2d targetYaw = new Rotation2d();
+      boolean varsNotSet = true;
+      DriverStation.Alliance alliance = null;
+
       if (result.hasTargets()) {
-
-        PhotonTrackedTarget target = result.getBestTarget();
-
-        // Calculate robot feild relative pose
-        if (Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
-          Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
-              Constants.Subsystems.Vision.kAprilTagFieldLayout.getTagPose(target.getFiducialId()).get(),
-              Constants.Subsystems.Vision.kCameraToRobot);
-
-          var allianceOptional = DriverStation.getAlliance();
-          DriverStation.Alliance alliance = allianceOptional.get();
-
-          double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose.toPose2d(),
-                Constants.Subsystems.Vision.blueClimbPos);
-          Rotation2d targetYaw = PhotonUtils.getYawToPose(robotPose.toPose2d(), Constants.Subsystems.Vision.blueClimbPos);
+        if (varsNotSet) {
+          varsNotSet = false;
 
           if (alliance == DriverStation.Alliance.Red) {
             // Distance
@@ -117,6 +113,7 @@ public class PhotonVision extends SubsystemBase {
           }
 
           System.out.println("Distance: " + distanceToTarget + " Target Yaw: " + targetYaw.getDegrees());
+        }
 
           double rotaioionSpeed = turnPID.calculate(targetYaw.getRadians(), Constants.Subsystems.Vision.kYawTarget);
           double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
@@ -135,11 +132,9 @@ public class PhotonVision extends SubsystemBase {
           } else {
             m_climberSubsystem.StopClimb();
           }
-        }
       } else {
         m_climberSubsystem.StopClimb();
       }
-
     }, m_driveSubsystem, m_climberSubsystem);
   }
 
