@@ -93,6 +93,15 @@ public final class Constants {
                 Units.inchesToMeters(158.84),
                 new Rotation2d(0.0));
 
+            public static final Pose2d blueClimbPos = new Pose2d(
+                    Units.inchesToMeters(182.11),
+                    Units.inchesToMeters(158.84),
+                    new Rotation2d(0.0));
+            public static final Pose2d redClimbPos = new Pose2d(
+                Units.inchesToMeters(469.64),
+                Units.inchesToMeters(158.84),
+                new Rotation2d(0.0));
+
             public static final Transform3d kCameraToRobot = new Transform3d(
                     -0.1016, // forward from robot center
                     0.0, // left/right camera is centered
