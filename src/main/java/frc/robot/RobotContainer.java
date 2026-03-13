@@ -123,6 +123,9 @@ public class RobotContainer {
     // Shooter control
     m_driverController.rightBumper()
         .whileTrue(m_photonVision.AimShoot());
+    
+    m_driverController.leftBumber()
+        .whileTrue(m_photonVision.AimClimb());
 
     // Start Shooter (constant speed)
     m_driverController.rightTrigger()
