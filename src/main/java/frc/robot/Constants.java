@@ -94,12 +94,12 @@ public final class Constants {
                 new Rotation2d(0.0));
 
             public static final Pose2d blueClimbPos = new Pose2d(
-                    Units.inchesToMeters(182.11),
-                    Units.inchesToMeters(158.84),
+                    Units.inchesToMeters(163.86),
+                    Units.inchesToMeters(21.75),
                     new Rotation2d(0.0));
             public static final Pose2d redClimbPos = new Pose2d(
-                Units.inchesToMeters(469.64),
-                Units.inchesToMeters(158.84),
+                Units.inchesToMeters(649.57 - (29.5 / 2)),
+                Units.inchesToMeters(152.78),
                 new Rotation2d(0.0));
 
             public static final Transform3d kCameraToRobot = new Transform3d(
