@@ -43,8 +43,8 @@ public class RobotContainer {
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
   private final AgitatorSubsystem m_AgitatorSubsystem = new AgitatorSubsystem();
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final PhotonVision m_photonVision = new PhotonVision(m_driveSubsystem, m_ShooterSubsystem, m_ClimberSubsystem);
-
+  private final PhotonVision m_photonVision = new PhotonVision(m_driveSubsystem, m_ShooterSubsystem, m_AgitatorSubsystem, m_IntakeSubsystem, m_ClimberSubsystem);
+ 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Driver.kJoystickID);
   private final CommandXboxController m_operatorController = new CommandXboxController(Operator.kJoystickID);
@@ -56,6 +56,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -107,9 +108,8 @@ public class RobotContainer {
 
   // Register named commands for use in PathPlanner autonomous paths
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.shoot_1_Command());
     NamedCommands.registerCommand("Shooter_ON", m_ShooterSubsystem.StartShoot());
-    NamedCommands.registerCommand("Shooter_OFF", m_ShooterSubsystem.StopShoot());
+    NamedCommands.registerCommand("Shoot_1", m_ShooterSubsystem.StartShoot());
     NamedCommands.registerCommand("Climb_UP", m_ClimberSubsystem.UpClimb());
     NamedCommands.registerCommand("Climb_DOWN", m_ClimberSubsystem.DownClimb());
     NamedCommands.registerCommand("Intake_ON", m_IntakeSubsystem.StartIntake());
@@ -122,15 +122,19 @@ public class RobotContainer {
     // Driver Controls
     // Shooter control
     m_driverController.rightBumper()
-        .whileTrue(m_photonVision.AimShoot());
-    
-    //m_driverController.leftBumber()
-    //    .whileTrue(m_photonVision.AimClimb());
-
+        .onTrue(m_photonVision.AimShoot());
+       
     // Start Shooter (constant speed)
     m_driverController.rightTrigger()
-        .onTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator()))
-        .onFalse(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator()));
+        .onTrue(Commands.parallel(m_ShooterSubsystem.StartShoot(), m_AgitatorSubsystem.StartAgitator(), m_IntakeSubsystem.StartIntake()));
+      
+
+        // m_operatorController.b()
+        //  .whileTrue(m_photonVision.AimClimb())
+        //  .onFalse(m_photonVision.resetClimb());
+
+m_driverController.rightBumper().negate().and(m_driverController.rightTrigger().negate())
+  .onTrue(Commands.parallel(m_ShooterSubsystem.StopShoot(), m_AgitatorSubsystem.StopAgitator(), m_IntakeSubsystem.StopIntake()));
 
     // Climber control
     m_operatorController.a()
@@ -158,8 +162,8 @@ public class RobotContainer {
     // Intake control
     // Start Intake
     m_operatorController.rightTrigger()
-        .toggleOnTrue(m_IntakeSubsystem.StartIntake())
-        .toggleOnFalse(m_IntakeSubsystem.StopIntake());
+        .onTrue(m_IntakeSubsystem.StartIntake())
+        .onFalse(m_IntakeSubsystem.StopIntake());
 
 
 
@@ -175,6 +179,10 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return autoChooser.getSelected();
+    return m_photonVision.AimShoot();
+  }
+    public Command DriveForwardCommand() {
+    // An example command will be run in autonomous
+    return m_driveSubsystem.DriveForward();
   }
 }

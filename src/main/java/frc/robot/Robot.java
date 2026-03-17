@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private Command m_driveForwardCommand;
   private final RobotContainer m_robotContainer;
 
   // Added fields
@@ -82,16 +85,22 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_driveForwardCommand = m_robotContainer.DriveForwardCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+      CommandScheduler.getInstance().schedule(Commands.sequence(
+        m_driveForwardCommand, 
+        new WaitCommand(2.0), // Wait 2 Seconds
+        m_autonomousCommand.repeatedly())
+        );
     }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    
   }
 
   @Override
@@ -102,6 +111,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+      m_driveForwardCommand.cancel();
     }
 
   }

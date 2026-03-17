@@ -5,67 +5,77 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Subsystems.Vision;
-import frc.robot.Robot;
+import frc.robot.Constants.Subsystems.Shooter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
-
-import javax.naming.spi.DirStateFactory.Result;
-
 import org.photonvision.EstimatedRobotPose;
 // PhotonVision imports
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+
 
 public class PhotonVision extends SubsystemBase {
   private final DriveSubsystem m_driveSubsystem;
   private final ShooterSubsystem m_ShooterSubsystem;
-  private final ClimberSubsystem m_climberSubsystem;
+  private final AgitatorSubsystem m_AgitatorSubsystem;
+  private final IntakeSubsystem m_IntakeSubsystem;
+  private final ClimberSubsystem m_ClimberSubsystem;
   private PhotonPoseEstimator photonEstimator;
 
   private PhotonCamera camera;
 
-  PIDController turnPID = new PIDController(0.03, 0.05, 0);
-  PIDController drivePID = new PIDController(0.5, 0, 0);
+  PIDController turnPID = new PIDController(0.1, 0.005, 0.01);
+  PIDController drivePID = new PIDController(1.05, 0.005, 0.1);
+  PIDController climbDrivePID = new PIDController(1.05, 0.005, 0.1);
+  PIDController climbTurnPID = new PIDController(0.1, 0.005, 0.01);
   Rotation2d targetYaw;
+  Rotation2d climbTargetYaw;
   double distanceToTarget;
+  double climbDistanceToTarget;
   double rotaioionSpeed;
+  boolean climbFirst = false;
 
   /**
    * Construct PhotonVision with shared subsystem references.
    * 
    * @param drive   shared DriveSubsystem
    * @param shooter shared ShooterSubsystem
+   * @param agitator shared AgitatorSubsystem
    */
-  public PhotonVision(DriveSubsystem drive, ShooterSubsystem shooter, ClimberSubsystem climber) {
+  public PhotonVision(DriveSubsystem drive, ShooterSubsystem shooter, AgitatorSubsystem agitator, IntakeSubsystem intake, ClimberSubsystem climb) {
     this.m_driveSubsystem = drive;
     this.m_ShooterSubsystem = shooter;
-    this.m_climberSubsystem = climber;
+    this.m_AgitatorSubsystem = agitator;
+    this.m_IntakeSubsystem = intake;
+    this.m_ClimberSubsystem = climb;
 
     camera = new PhotonCamera("MainCamera");
 
     turnPID.setTolerance(3); // degrees
-    drivePID.setTolerance(0.06); // meters
+    drivePID.setTolerance(0.1524); // meters
+    climbTurnPID.setTolerance(3);
+    climbDrivePID.setTolerance(Units.inchesToMeters(2));
 
-    photonEstimator = new PhotonPoseEstimator(Constants.Subsystems.Vision.kAprilTagFieldLayout,
+    photonEstimator = new PhotonPoseEstimator(
+      Constants.Subsystems.Vision.kAprilTagFieldLayout,
         Constants.Subsystems.Vision.kCameraToRobot);
-
   }
+
+  
+    
 
   /**
    * Example command factory method.
@@ -94,6 +104,10 @@ public class PhotonVision extends SubsystemBase {
    */
   @Override
   public void periodic() {
+      RunCamera();
+  }
+
+  public void RunCamera(){
     var result = camera.getLatestResult();
     if (result.hasTargets()) {
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
@@ -108,6 +122,9 @@ public class PhotonVision extends SubsystemBase {
         m_driveSubsystem.addVisionMeasurement(VisionEst2d, Timer.getFPGATimestamp());
       }
     }
+
+
+
   }
 
   public Command AimClimb() {
@@ -162,16 +179,18 @@ public class PhotonVision extends SubsystemBase {
 
       System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
       if (turnPID.atSetpoint()) {
-        m_climberSubsystem.UpClimb();
+        m_ClimberSubsystem.UpClimb();
       } else {
-        m_climberSubsystem.DownClimb();
+        m_ClimberSubsystem.DownClimb();
       }
-    }, m_driveSubsystem, m_climberSubsystem);
+    }, m_driveSubsystem, m_ClimberSubsystem);
   }
 
   public Command AimShoot() {
     return new RunCommand(() -> {
   
+          
+          RunCamera();
           double distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
               Constants.Subsystems.Vision.kHubPoseBlue);
           Rotation2d targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(),
@@ -184,14 +203,14 @@ public class PhotonVision extends SubsystemBase {
             // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
                 Constants.Subsystems.Vision.kHubPoseRed);
-            System.out.println("Distance to Target: " + distanceToTarget);
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseRed);
+
           } else if (alliance == DriverStation.Alliance.Blue) {
             // Distance
             distanceToTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
                 Constants.Subsystems.Vision.kHubPoseBlue);
-            System.out.println("Distance to Target: " + distanceToTarget);
+    
             // Rotation
             targetYaw = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kHubPoseBlue);
           } else {
@@ -202,13 +221,15 @@ public class PhotonVision extends SubsystemBase {
           double rotaioionSpeed = turnPID.calculate(targetYaw.getDegrees(), Constants.Subsystems.Vision.kYawTarget);
 
           double driveSpeed = drivePID.calculate(distanceToTarget, Constants.Subsystems.Vision.kDistanceTarget);
+  
 
           // Clamp to safty range
-          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -Constants.Subsystems.Drive.kMaxNormalSpeed,
-              Constants.Subsystems.Drive.kMaxNormalSpeed);
-          driveSpeed = MathUtil.clamp(driveSpeed, -Constants.Subsystems.Drive.kMaxRotSpeed,
-              Constants.Subsystems.Drive.kMaxRotSpeed);
+          rotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -0.7,
+             0.7);
+          driveSpeed = MathUtil.clamp(driveSpeed, -1,
+              1);
 
+                  
           if (!turnPID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, rotaioionSpeed);
           } else {
@@ -216,38 +237,143 @@ public class PhotonVision extends SubsystemBase {
           }
 
           System.out.println("Turn: " + turnPID.atSetpoint() + "Drive" + drivePID.atSetpoint());
-          if (turnPID.atSetpoint()) {
+          if (turnPID.atSetpoint() && drivePID.atSetpoint()) {
             m_driveSubsystem.arcadeDrive(0, 0);
-            m_ShooterSubsystem.StartShoot();
-          } else {
-            m_ShooterSubsystem.StopShoot();
-          }
+            m_ShooterSubsystem.StartShootVoid();
+            m_AgitatorSubsystem.StartAgitatorVoid();
+            System.out.println("Shooting");
+            m_IntakeSubsystem.StartIntakeVoid();
+          } 
 
-          // if (targetYaw.getDegrees() > 2) {
-          // m_driveSubsystem.arcadeDrive(-0.4, 0);
-          // System.out.println("Turning -0.4");
-          // } else if (targetYaw.getDegrees() < -2) {
-          // m_driveSubsystem.arcadeDrive(0.4, 0);
-          // System.out.println("Turning 0.4");
-          // } else {
 
-          // if (Math.abs(distanceToTarget) > 3) {
-          // m_driveSubsystem.arcadeDrive(0, 0.4);
-          // System.out.println("Driving Forward 0.4");
-          // } else if (Math.abs(distanceToTarget) < 2.75) {
-          // m_driveSubsystem.arcadeDrive(0, -0.4);
-          // System.out.println("Driving Backward -0.4");
-          // } else {
-          // m_driveSubsystem.arcadeDrive(0, 0);
-          // m_ShooterSubsystem.StartShoot();
-          // }
-          // }
+    }, m_driveSubsystem, m_ShooterSubsystem, m_AgitatorSubsystem, m_IntakeSubsystem);
+  }
+
+
+
+//  public Command AimClimb() {
+//     return new RunCommand(() -> {
+          
+//       if (!climbFirst){
+      
+//       //Put climber up
+//           m_ClimberSubsystem.UpClimb();
+          
+  
+//           double distanceToFirstTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
+//               Constants.Subsystems.Vision.kClimbFirstBlue);
+//           Rotation2d targetYawFirst = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(),
+//               Constants.Subsystems.Vision.kClimbFirstBlue);
+
+
+
+
+
+//           var allianceOptional = DriverStation.getAlliance();
+//           DriverStation.Alliance alliance = allianceOptional.get();
+
+//           if (alliance == DriverStation.Alliance.Red) {
+//             // Distance
+//             distanceToFirstTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
+//                 Constants.Subsystems.Vision.kClimbFirstRed);
+//             // Rotation
+//             targetYawFirst = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kClimbFirstRed);
+
+//           } else if (alliance == DriverStation.Alliance.Blue) {
+//             // Distance
+//             distanceToFirstTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
+//                 Constants.Subsystems.Vision.kClimbFirstBlue);
+    
+//             // Rotation
+//             targetYawFirst = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kClimbFirstBlue);
+//           } else {
+//             System.out.println("Error loading Allance color");
+//           }
+
+//           System.out.println("Yaw" + targetYawFirst.getDegrees());
+//           double climbRotaioionSpeed = turnPID.calculate(targetYawFirst.getDegrees(), 0);
+
+//           double climbDriveSpeed = drivePID.calculate(distanceToFirstTarget, 0);
+  
+//           // Clamp to safty range
+//           climbRotaioionSpeed = MathUtil.clamp(climbRotaioionSpeed, -0.7,
+//              0.7);
+//           climbDriveSpeed = MathUtil.clamp(climbDriveSpeed, -1,
+//               1);
+
+                  
+//           if (!turnPID.atSetpoint()) {
+//             m_driveSubsystem.arcadeDrive(0, climbRotaioionSpeed);
+//           } else {
+//             m_driveSubsystem.arcadeDrive(climbDriveSpeed, 0);
+//           }
+
+//           System.out.println("Turn: " + climbTurnPID.atSetpoint() + "Drive" + climbDrivePID.atSetpoint());
+//           if (climbTurnPID.atSetpoint() && climbDrivePID.atSetpoint()) {
+//             climbFirst = true;
+//           } 
+
+
+//         } else {
+
+
+//                  double distanceToFinalTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
+//               Constants.Subsystems.Vision.kClimbFinalBlue);
+//           Rotation2d targetYawFinal = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(),
+//               Constants.Subsystems.Vision.kClimbFinalBlue);
+
+
+
+//           var allianceOptional = DriverStation.getAlliance();
+//           DriverStation.Alliance alliance = allianceOptional.get();
+
+//           if (alliance == DriverStation.Alliance.Red) {
+//             // Distance
+//             distanceToFinalTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
+//                 Constants.Subsystems.Vision.kClimbFinalRed);
+//             // Rotation
+//             targetYawFinal = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kClimbFinalRed);
+
+//           } else if (alliance == DriverStation.Alliance.Blue) {
+//             // Distance
+//             distanceToFinalTarget = PhotonUtils.getDistanceToPose(m_driveSubsystem.get2dPose(),
+//                 Constants.Subsystems.Vision.kClimbFinalBlue);
+    
+//             // Rotation
+//             targetYawFinal = PhotonUtils.getYawToPose(m_driveSubsystem.get2dPose(), Constants.Subsystems.Vision.kClimbFinalBlue);
+//           } else {
+//             System.out.println("Error loading Allance color");
+//           }
 
         
-      // } else {
-      //   m_driveSubsystem.arcadeDrive(0, 0);
-      // }
+//           double climbRotaioionSpeed = turnPID.calculate(targetYawFinal.getDegrees(), 0);
 
-    }, m_driveSubsystem, m_ShooterSubsystem);
-  }
+//           double climbDriveSpeed = drivePID.calculate(distanceToFinalTarget, 0);
+  
+//           // Clamp to safty range
+//           climbRotaioionSpeed = MathUtil.clamp(rotaioionSpeed, -0.7,
+//              0.7);
+//           climbDriveSpeed = MathUtil.clamp(climbDriveSpeed, -1,
+//               1);
+
+                  
+//           if (!turnPID.atSetpoint()) {
+//             m_driveSubsystem.arcadeDrive(0, climbRotaioionSpeed);
+//           } else {
+//             m_driveSubsystem.arcadeDrive(climbDriveSpeed, 0);
+//           }
+
+//           System.out.println("Turn: " + climbTurnPID.atSetpoint() + "Drive" + climbDrivePID.atSetpoint());
+//           if (climbTurnPID.atSetpoint() && climbDrivePID.atSetpoint()) {
+//             m_ClimberSubsystem.DownClimb();
+//           } 
+//         }
+//     }, m_driveSubsystem, m_ClimberSubsystem);
+//  }
+
+// public Command resetClimb(){
+// return this.run(() -> {
+//   climbFirst = false;
+// });
+// }
 }
