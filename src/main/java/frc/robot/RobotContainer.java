@@ -124,7 +124,7 @@ public class RobotContainer {
     m_driverController.rightBumper()
         .onTrue(m_photonVision.AimShoot());
 
-    m_driverController.leftBumper()
+    m_operatorController.leftBumper()
         .onTrue(m_photonVision.AimClimb());
        
     // Start Shooter (constant speed)
